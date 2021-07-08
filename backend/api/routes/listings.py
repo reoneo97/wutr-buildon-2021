@@ -41,4 +41,4 @@ async def download_image(
     img_name = f"{username}/{img_id}"
     img = download_image_s3(img_name)
 
-    return StreamingResponse(img,media_type="image/png")
+    return StreamingResponse(img)
