@@ -17,6 +17,6 @@ jobs:
       - name: Publish image to Docker Hub
         uses: elgohr/Publish-Docker-Github-Action@master
         with: 
-          name: reoneo/buildon2021
+          name: reoneo/buildon-app
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
