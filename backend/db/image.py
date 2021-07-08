@@ -1,6 +1,5 @@
 import boto3
 from botocore.exceptions import ClientError
-import requests
 import uuid
 from loguru import logger
 from PIL import Image
