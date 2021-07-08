@@ -2,6 +2,9 @@ from typing import Optional, Set
 from pydantic import BaseModel
 
 
+class ListingImage(BaseModel):
+    filename: str
+
 class Listing(BaseModel):
     name: str
     description: str
@@ -11,4 +14,5 @@ class Listing(BaseModel):
     
 class ListingInit(BaseModel):
     name: str
+    image: ListingImage
     
