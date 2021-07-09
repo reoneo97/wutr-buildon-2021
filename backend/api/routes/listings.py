@@ -24,8 +24,6 @@ def post_listing(
 
 @router.get("/{listing_id}",response_model=Listing)
 def get_listing(listing_id:str):
-
-
     key = ListingKey(id = listing_id)
     listing = get_listing_db(key)
     logger.info(f"Get Request for {listing_id}")
@@ -55,4 +53,4 @@ async def download_image(
     img_name = f"{username}/{img_id}"
     img = download_image_s3(img_name)
 
-    return StreamingResponse(img)
+    return StreamingResponse(img,media_type="image/png")
