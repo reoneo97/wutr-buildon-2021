@@ -8,7 +8,8 @@ from models.listings import Listing, ListingImage, ListingKey, ListingDb
 
 
 def get_table(table_name):
-    db = boto3.resource('dynamodb')
+
+    db = boto3.resource('dynamodb',region_name="us-east-1")
     return db.Table(table_name)
 
 
