@@ -7,7 +7,7 @@ import io
 
 
 # TODO: Store unsecure bucket links somewhere else
-PHOTO_BUCKET = "wutr-photos"
+PHOTO_BUCKET = "wutr-images"
 
 
 def upload_image_s3(username: str, image):

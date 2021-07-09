@@ -1,13 +1,11 @@
 from typing import Optional
 from pydantic import BaseModel
 
-
-class UserBase(BaseModel):
+class UserKey(BaseModel):
     username: str
-    display_name: str
-    
-class User(BaseModel):
-    username: str
+     
+class User(UserKey):
     email: Optional[str] = None
     full_name: Optional[str] = None
     disabled: Optional[bool] = None
+

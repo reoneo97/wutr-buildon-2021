@@ -1,9 +1,11 @@
 from fastapi import File, UploadFile, APIRouter, Depends,HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import StreamingResponse,FileResponse,Response
-from models.listings import Listing, ListingInit, ListingImage
+from models.listings import *
 
-from db.image import upload_image_s3, download_image_s3
+from db.s3 import upload_image_s3, download_image_s3
+from db.dynamodb import create_listing
+from db.dynamodb import get_listing as get_listing_db
 from PIL import Image
 from io import BytesIO
 from loguru import logger
@@ -11,11 +13,23 @@ from loguru import logger
 from api.dependencies.authentication import get_user_id
 router = APIRouter()
 
-@router.post("/create/1",response_model=ListingInit)
-def create_listing(listing: ListingInit):
-    results = {"listing":listing}
-    
-    return results
+@router.post("/create/",response_model=ListingDb)
+def post_listing(
+    listing: ListingCreate, username: str = Depends(get_user_id)
+    ):
+    listing = Listing(user=username,**listing.dict())
+    db_entry = create_listing(listing)
+    logger.info(f"Post Request done for {db_entry.id}")
+    return db_entry
+
+@router.get("/{listing_id}",response_model=Listing)
+def get_listing(listing_id:str):
+
+
+    key = ListingKey(id = listing_id)
+    listing = get_listing_db(key)
+    logger.info(f"Get Request for {listing_id}")
+    return listing
     
 
 # TODO: Provide better information about the error 
