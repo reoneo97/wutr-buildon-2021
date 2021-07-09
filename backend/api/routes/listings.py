@@ -9,7 +9,7 @@ from db.dynamodb import get_listing as get_listing_db
 from PIL import Image
 from io import BytesIO
 from loguru import logger
-
+from .utils import get_current_timestamp
 from api.dependencies.authentication import get_user_id
 router = APIRouter()
 
@@ -17,7 +17,9 @@ router = APIRouter()
 def post_listing(
     listing: ListingCreate, username: str = Depends(get_user_id)
     ):
-    listing = Listing(user=username,**listing.dict())
+    listing = Listing(
+        user=username, created_timestamp = get_current_timestamp(),
+        **listing.dict())
     db_entry = create_listing(listing)
     logger.info(f"Post Request done for {db_entry.id}")
     return db_entry

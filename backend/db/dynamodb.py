@@ -16,6 +16,7 @@ def get_table(table_name):
 def create_listing(listing: Listing, table_name="listings"):
     idx = generate_id()
     listing_db = ListingDb(id=idx, **listing.dict())
+    logger.info(listing_db)
     try:
         __create_item(listing_db.dict(), table_name)
         return listing_db

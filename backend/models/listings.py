@@ -1,7 +1,7 @@
-from typing import Optional, Set, List
+from typing import Optional, Set, List, Union
 from pydantic import BaseModel
 from decimal import Decimal
-
+from datetime import datetime
 
 class ListingKey(BaseModel):
     id: str
@@ -19,6 +19,7 @@ class Listing(BaseModel):
     images: List[ListingImage]
     user: str
     tags: List[str] = list()
+    created_timestamp: str
 
 class ListingCreate(BaseModel):
     name: str
@@ -30,3 +31,4 @@ class ListingCreate(BaseModel):
 
 class ListingDb(Listing):
     id: str
+    created_timestamp: str # Override for putting into DB
