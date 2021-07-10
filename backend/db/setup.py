@@ -1,6 +1,5 @@
 import boto3
 from botocore.exceptions import ClientError
-from models.listings import ListingDb
 from loguru import logger
 import uuid
 
@@ -83,7 +82,7 @@ def create_tables():
         TableName='views',
         KeySchema=[
             {
-                'AttributeName': 'view_id',
+                'AttributeName': 'timestamp',
                 'KeyType': 'HASH'
             },
             {
@@ -93,8 +92,8 @@ def create_tables():
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'view_id',
-                'AttributeType': 'S'
+                'AttributeName': 'timestamp',
+                'AttributeType': 'N'
             },
             {
                 'AttributeName': 'username',

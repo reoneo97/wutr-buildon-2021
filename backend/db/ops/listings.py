@@ -16,7 +16,8 @@ def create_listing(listing: Listing, table_name=TABLE_NAME):
         return False
 
 
-def get_listing(key: ListingKey):
+def get_listing(key: ListingKey)->Listing:
+    logger.info(key.dict())
     return __get_item(key.dict(), table_name=TABLE_NAME)
 
 def get_user_listings(username):
