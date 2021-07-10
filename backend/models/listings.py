@@ -1,15 +1,13 @@
-from typing import Optional, Set, List
+from typing import Optional, Set, List, Union
 from pydantic import BaseModel
 from decimal import Decimal
-
+from datetime import datetime
 
 class ListingKey(BaseModel):
     id: str
 
-
 class ListingImage(BaseModel):
     filename: str
-
 
 class Listing(BaseModel):
     name: str
@@ -19,6 +17,8 @@ class Listing(BaseModel):
     images: List[ListingImage]
     user: str
     tags: List[str] = list()
+    created_timestamp: str
+    id:Optional[str] = None
 
 class ListingCreate(BaseModel):
     name: str
@@ -28,5 +28,13 @@ class ListingCreate(BaseModel):
     images: List[ListingImage]
     tags: List[str] = list()
 
-class ListingDb(Listing):
-    id: str
+class ListingFeed(BaseModel):
+    """
+    List of Listings and the count
+    """
+    listings: List[Listing]
+    count: Optional[int]
+
+class ListingIdFeed(BaseModel):
+    ids: List[ListingKey]
+    count: Optional[int]
