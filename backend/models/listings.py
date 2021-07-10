@@ -6,10 +6,8 @@ from datetime import datetime
 class ListingKey(BaseModel):
     id: str
 
-
 class ListingImage(BaseModel):
     filename: str
-
 
 class Listing(BaseModel):
     name: str
@@ -20,6 +18,7 @@ class Listing(BaseModel):
     user: str
     tags: List[str] = list()
     created_timestamp: str
+    id:Optional[str] = None
 
 class ListingCreate(BaseModel):
     name: str
@@ -29,6 +28,13 @@ class ListingCreate(BaseModel):
     images: List[ListingImage]
     tags: List[str] = list()
 
-class ListingDb(Listing):
-    id: str
-    created_timestamp: str # Override for putting into DB
+class ListingFeed(BaseModel):
+    """
+    List of Listings and the count
+    """
+    listings: List[Listing]
+    count: Optional[int]
+
+class ListingIdFeed(BaseModel):
+    ids: List[ListingKey]
+    count: Optional[int]

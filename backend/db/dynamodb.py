@@ -2,34 +2,18 @@ import boto3
 from loguru import logger
 import uuid
 from botocore.exceptions import ClientError
-from models.listings import Listing, ListingImage, ListingKey, ListingDb
+from boto3.dynamodb.conditions import Key, Attr
 
 # TODO Put this as decorator?
+# Perform generic functions 
 
-
-def get_table(table_name):
+def __get_table(table_name):
 
     db = boto3.resource('dynamodb',region_name="us-east-1")
     return db.Table(table_name)
 
-
-def create_listing(listing: Listing, table_name="listings"):
-    idx = generate_id()
-    listing_db = ListingDb(id=idx, **listing.dict())
-    logger.info(listing_db)
-    try:
-        __create_item(listing_db.dict(), table_name)
-        return listing_db
-    except ClientError as e:
-        logger.exception(e)
-
-
-def get_listing(key: ListingKey):
-    return __get_item(key.dict(), table_name="listings")
-
-
 def __create_item(item, table_name):
-    table = get_table(table_name)
+    table = __get_table(table_name)
     table.put_item(
         Item=item
     )
@@ -37,12 +21,24 @@ def __create_item(item, table_name):
 
 
 def __get_item(item_key, table_name):
-    table = get_table(table_name)
+    table = __get_table(table_name)
     response = table.get_item(
         Key=item_key
     )
+    if "Item" not in response.keys():
+        return None
     return response["Item"]
 
+def __table_query(key,value,table_name):
+    pass
+
+def __table_scan(attr,value,table_name):
+    table = __get_table(table_name)
+    logger.debug([attr,value,table_name])
+    response = table.scan(
+        FilterExpression=Attr(attr).eq(value)
+    )
+    return response["Items"]
 
 def generate_id():
     return uuid.uuid1().hex

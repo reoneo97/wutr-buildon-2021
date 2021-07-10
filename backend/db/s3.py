@@ -9,6 +9,8 @@ import io
 # TODO: Store unsecure bucket links somewhere else
 PHOTO_BUCKET = "wutr-images"
 
+# TODO: Provide better exception handling
+
 
 def upload_image_s3(username: str, image):
     filename = __generate_image_filename(username)
@@ -17,9 +19,9 @@ def upload_image_s3(username: str, image):
     __upload_image(image, filename, PHOTO_BUCKET)
     return filename
 
-def download_image_s3(filename) -> Image.Image:
-    return __download_image(filename,PHOTO_BUCKET)
-
+def download_image_s3(filename) -> Image.Image or False:
+    image = __download_image(filename,PHOTO_BUCKET)
+    return image
 def __generate_image_filename(username):
     return f'{username}/{uuid.uuid1().hex}'
 
@@ -46,7 +48,7 @@ def __upload_image(image, file_name: str, bucket: str, object_name=None,):
         )
     except ClientError as e:
         logger.error(e)
-        return False
+        return None
     logger.info(f"Uploaded {file_name} successfully to S3")
     return True
 
@@ -56,7 +58,9 @@ def __download_image(file_name:str, bucket_name:str):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket(bucket_name)
     logger.info(f'key is {file_name}')
-    image = bucket.Object(file_name)
-    img_data = image.get().get('Body').read()
-
-    return io.BytesIO(img_data)
+    try:
+        image = bucket.Object(file_name)
+        img_data = image.get().get('Body').read()
+        return io.BytesIO(img_data)
+    except ClientError as e:
+        return None        

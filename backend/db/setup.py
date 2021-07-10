@@ -4,6 +4,7 @@ from models.listings import ListingDb
 from loguru import logger
 import uuid
 
+
 db = boto3.resource("dynamodb")
 
 def create_tables():
@@ -30,7 +31,7 @@ def create_tables():
 
         logger.info("Listing Table created")
     except ClientError as e:
-        logger.info("Listing table already present")
+        logger.warning("Listing table already present")
 
     try:    
         user_table = db.create_table(
@@ -52,38 +53,62 @@ def create_tables():
                 'WriteCapacityUnits': 5
             }
         )
-        logger.info("User Table created")
+        logger.debug("User Table created")
     except ClientError as e:
-        logger.info("User table already present")
-    # views_table = db.create_table(
-    #     TableName='views',
-    #     KeySchema=[
-    #         {
-    #             'AttributeName': 'username',
-    #             'KeyType': 'HASH'
-    #         },
-    #         {
-    #             'AttributeName': 'listing_id',
-    #             'KeyType': 'HASH'
-    #         }
-    #     ],
-    #     AttributeDefinitions=[
-    #         {
-    #             'AttributeName': 'username',
-    #             'AttributeType': 'S'
-    #         },
-    #         {
-    #             'AttributeName': 'listing_id',
-    #             'AttributeType': 'S'
-    #         },
-    #     ],
-    #     ProvisionedThroughput={
-    #         'ReadCapacityUnits': 5,
-    #         'WriteCapacityUnits': 5
-    #     }
-    # )
-    # logger.info("Views Table created")
+        logger.warning("User table already present")
+    try:    
+        feed_table = db.create_table(
+            TableName='users_feed',
+            KeySchema=[
+                {
+                    'AttributeName': 'username',
+                    'KeyType': 'HASH'
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'username',
+                    'AttributeType': 'S'
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        )
+        logger.debug("User Feed Table created")
+    except ClientError as e:
+        logger.warning("User feed table already present")
+    views_table = db.create_table(
+        TableName='views',
+        KeySchema=[
+            {
+                'AttributeName': 'view_id',
+                'KeyType': 'HASH'
+            },
+            {
+                'AttributeName': 'username',
+                'KeyType': 'RANGE'
+            }
+        ],
+        AttributeDefinitions=[
+            {
+                'AttributeName': 'view_id',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'username',
+                'AttributeType': 'S'
+            },
+        ],
+        ProvisionedThroughput={
+            'ReadCapacityUnits': 5,
+            'WriteCapacityUnits': 5
+        }
+    )
+    logger.debug("Views Table created")
     return
+
 def create_table_from_model(table_name,model):
     pass
 
