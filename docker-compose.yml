@@ -1,13 +1,16 @@
 version: '3'
 services:
     web-backend:
-        build: .
+        build: 
+            context: ./backend
+            dockerfile: Dockerfile
         ports:
-            - "80:8000"
+            - "8000:8000"
         volumes:
             - $HOME/.aws/credentials:/home/app/.aws/credentials
-    # web-frontend:
-    #     build:
-    #         context: ./frontend
-    #         dockerfile: Dockerfile.front
-        
+    web-frontend:
+        build:
+            context: ./frontend
+            dockerfile: Dockerfile
+        ports:
+            - "80:80"

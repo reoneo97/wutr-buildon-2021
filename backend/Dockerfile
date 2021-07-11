@@ -6,4 +6,4 @@ COPY . .
 RUN pip install --upgrade pip
 RUN pip3 install -r backend/requirements.txt
 
-CMD ["uvicorn","main:app","--reload","--host","0.0.0.0","--port","8000","--app-dir","./backend/"]
+CMD ["uvicorn","main:app","--reload","--host","0.0.0.0","--port","8000"]
