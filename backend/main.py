@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import FastAPI
 from api.api import router as api_router
-app = FastAPI()
+app = FastAPI(root_path="/api/")
 from loguru import logger
 
 from fastapi.security import OAuth2PasswordBearer

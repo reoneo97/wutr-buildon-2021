@@ -8,6 +8,8 @@ services:
             - "8000:8000"
         volumes:
             - $HOME/.aws/credentials:/root/.aws/credentials
+        environment: 
+            - AWS_PROFILE=default
     frontend:
         build:
             context: ./frontend
