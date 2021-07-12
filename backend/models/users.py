@@ -9,3 +9,5 @@ class User(UserKey):
     full_name: Optional[str] = None
     disabled: Optional[bool] = None
 
+class UserAuth(UserKey):
+    password: str

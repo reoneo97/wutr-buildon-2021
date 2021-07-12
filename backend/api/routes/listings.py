@@ -10,7 +10,7 @@ from PIL import Image
 from io import BytesIO
 from loguru import logger
 from utils import get_current_timestamp
-from api.dependencies.authentication import get_user_id
+from .authentication import get_user_id
 router = APIRouter()
 
 # TODO: Add more async await commands to make the application faster
