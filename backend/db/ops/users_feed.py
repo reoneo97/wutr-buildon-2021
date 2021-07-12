@@ -22,6 +22,8 @@ def remove_listing_from_feed(username: str, listing_id: str):
 def get_user_feed(username:str):
     user_key = {"username": username}
     item = __get_item(user_key, TABLE_NAME)
+    if not item:
+        return False
     ids = item["feed"]
     keys = [{"id":idx} for idx in ids]
     logger.info(keys[0])
