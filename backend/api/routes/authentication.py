@@ -36,7 +36,7 @@ def get_fake_user() -> User:
 def password_hash(pwd):
     return pwd
     
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme))->User:
     user = fake_decode_token(token)
     if not user:
         raise HTTPException(
@@ -45,6 +45,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             headers={"WWW-Authenticate": "Bearer"},
         )
     return user
+
+async def get_current_username(token: str = Depends(oauth2_scheme))->str:
+    user = fake_decode_token(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user.username
+
 async def get_user_id() -> str:
     user = get_fake_user()
     return user.username

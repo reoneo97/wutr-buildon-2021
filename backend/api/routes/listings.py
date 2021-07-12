@@ -2,6 +2,7 @@ from fastapi import File, UploadFile, APIRouter, Depends, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import StreamingResponse, FileResponse, Response
 from models.listings import *
+from models.users import User
 
 from db.s3 import upload_image_s3, download_image_s3
 from db.ops import listings as listing_db
@@ -10,7 +11,7 @@ from PIL import Image
 from io import BytesIO
 from loguru import logger
 from utils import get_current_timestamp
-from .authentication import get_user_id
+from .authentication import get_user_id, get_current_username, get_current_user
 router = APIRouter()
 
 # TODO: Add more async await commands to make the application faster
@@ -18,7 +19,7 @@ router = APIRouter()
 
 @router.post("/create", response_model=Listing)
 def post_listing(
-    listing: ListingCreate, username: str = Depends(get_user_id)
+    listing: ListingCreate, username: str = Depends(get_current_username)
 ) -> Listing:
     """
     Creates a listing object given certain parameters. 
@@ -36,7 +37,8 @@ def post_listing(
 
 
 @router.get("/{listing_id}", response_model=Listing)
-async def get_listing(listing_id: str, username: str = Depends(get_user_id)):
+async def get_listing(
+    listing_id: str, user: str = Depends(get_current_username)):
     key = ListingKey(id=listing_id)
     listing = listing_db.get_listing(key)
     views.add_view(username, listing_id)
@@ -64,14 +66,14 @@ async def search_listing(search_key: str):
 
 @router.post("/img/upload_img", response_model=ListingImage)
 async def upload_image(
-    username: str = Depends(get_user_id),
+    username: str = Depends(get_current_username),
     file: UploadFile = File(...),
 ) -> ListingImage:
     if file.content_type.split("/")[0] != "image":
         raise HTTPException(
             422, detail="Input image must either be .png or .jpg")
     logger.info(username)
-    filename = upload_image_s3(username, file)
+    filename = upload_image_s3(file)
     response = {"filename": filename}
     return response
 
@@ -79,11 +81,8 @@ async def upload_image(
 @router.get("/img/{img_id}",)
 async def download_image(
     img_id: str,
-    username: str = Depends(get_user_id),
 ):
-
-    img_name = f"{username}/{img_id}"
-    img = download_image_s3(img_name)
+    img = download_image_s3(img_id)
     if not img:
         raise HTTPException(423, detail="Image cannot be found")
     return StreamingResponse(img, media_type="image/png")
