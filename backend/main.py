@@ -2,11 +2,9 @@ from typing import Optional
 
 from fastapi import FastAPI
 from api.api import router as api_router
-app = FastAPI(root_path="/api/")
+app = FastAPI()
 from loguru import logger
-
-from fastapi.security import OAuth2PasswordBearer
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+from api.routes.authentication import get_current_user, get_fake_user, get_current_username
 
 
 app.include_router(api_router)
@@ -14,3 +12,8 @@ app.include_router(api_router)
 async def root():
     logger.info("accesssed root")
     return {"message": "Hello World"}
+
+def test_user():
+    return "test_user"
+app.dependency_overrides[get_current_user] = get_fake_user
+app.dependency_overrides[get_current_username] = test_user

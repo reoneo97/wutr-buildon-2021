@@ -12,8 +12,8 @@ PHOTO_BUCKET = "wutr-images"
 # TODO: Provide better exception handling
 
 
-def upload_image_s3(username: str, image):
-    filename = __generate_image_filename(username)
+def upload_image_s3(image):
+    filename = __generate_image_filename()
     file_ext = image.content_type.split("/")[1]
     filename = f'{filename}.{file_ext}'
     __upload_image(image, filename, PHOTO_BUCKET)
@@ -22,8 +22,8 @@ def upload_image_s3(username: str, image):
 def download_image_s3(filename) -> Image.Image or False:
     image = __download_image(filename,PHOTO_BUCKET)
     return image
-def __generate_image_filename(username):
-    return f'{username}/{uuid.uuid1().hex}'
+def __generate_image_filename():
+    return uuid.uuid1().hex
 
 def __upload_image(image, file_name: str, bucket: str, object_name=None,):
     """Upload a file to an S3 bucket
