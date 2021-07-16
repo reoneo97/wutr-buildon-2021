@@ -15,5 +15,6 @@ async def root():
 
 def test_user():
     return "test_user"
+
 app.dependency_overrides[get_current_user] = get_fake_user
 app.dependency_overrides[get_current_username] = test_user

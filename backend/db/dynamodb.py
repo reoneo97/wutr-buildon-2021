@@ -7,11 +7,11 @@ from typing import Dict
 
 # TODO Make __get_table a decorator
 # Perform generic functions
-
+REGION_NAME="ap-southeast-1"
 
 def __get_table(table_name):
 
-    db = boto3.resource('dynamodb', region_name="us-east-1")
+    db = boto3.resource('dynamodb', region_name=REGION_NAME)
     return db.Table(table_name)
 
 
@@ -34,7 +34,7 @@ def __get_item(item_key, table_name):
 
 def __batch_get_item(keys, table_name):
     """Get items from a single table"""
-    db = boto3.resource('dynamodb', region_name="us-east-1")
+    db = boto3.resource('dynamodb', region_name=REGION_NAME)
     request = {table_name:{"Keys":keys}}
     logger.debug(request)
     response = db.batch_get_item(RequestItems=request)

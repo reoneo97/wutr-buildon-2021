@@ -7,7 +7,7 @@ import io
 
 
 # TODO: Store unsecure bucket links somewhere else
-PHOTO_BUCKET = "wutr-images"
+PHOTO_BUCKET = "wutr-images2"
 
 # TODO: Provide better exception handling
 
