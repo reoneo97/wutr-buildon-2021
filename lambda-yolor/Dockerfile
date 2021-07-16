@@ -9,12 +9,7 @@ RUN python3.8 -m pip install -r requirements.txt
 
 # Copy function codes and folders to container
 COPY app.py ./
-COPY cfg ./
-COPY darknet ./
-COPY data ./
-COPY models ./
-COPY utils ./
-COPY weight ./
+COPY . .
 
 # Set the CMD to your handler
 CMD ["app.lambda_handler"]
