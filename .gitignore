@@ -5,3 +5,4 @@ backend/testing/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 test/
+.secrets
