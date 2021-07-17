@@ -29,6 +29,5 @@ thop  # FLOPS computation
 
 # pytorch -------------------------------------
 -f https://download.pytorch.org/whl/torch_stable.html 
-torch
-torchvision
-torchaudio
+torch==1.9.0+cpu
+torchvision==0.10.0+cpu

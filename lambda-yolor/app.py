@@ -15,7 +15,7 @@ import torch.backends.cudnn as cudnn
 from numpy import random
 
 from utils.google_utils import attempt_load
-from utils.datasets import LoadStreams, LoadImages
+from utils.datasets import LoadImages
 from utils.general import (
     check_img_size, non_max_suppression, apply_classifier, scale_coords, xyxy2xywh, strip_optimizer)
 from utils.plots import plot_one_box
@@ -39,7 +39,7 @@ def detect(img):
     imgsz = 1280
 
     # Initialize
-    device = select_device('0')
+    device = select_device('cpu')
 
     # Load model
     model = Darknet(cfg, imgsz)#.cuda() #if you want cuda remove the comment
@@ -99,21 +99,22 @@ def detect(img):
                     print(xywh) # for each bounding box, return a list containing [x_center, y_center, width, height]
 
 
-s3 = boto3.resource('s3')
+
 
 def lambda_handler(event, context):
+    s3 = boto3.client('s3')
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     key = event['Records'][0]['s3']['object']['key']
+    fileObj = s3.get_object(Bucket=bucket_name, Key=key)
+    file_content = fileObj["Body"].read()
 
-    img = readImageFromBucket(key, bucket_name)
-    detect(img)
+    np_array = np.fromstring(file_content, np.uint8)
+    image_np = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+    cv2.imwrite("/tmp/image.jpg", image_np)
+
+    detect("/tmp/image.jpg")
 
     # prediction = model.predict(img[np.newaxis, ...])
     # predicted_class = imagenet_labels[np.argmax(prediction[0], axis=-1)]
     # print('ImageName: {0}, Prediction: {1}'.format(key, predicted_class))
 
-def readImageFromBucket(key, bucket_name):
-    bucket = s3.Bucket(bucket_name)
-    object = bucket.Object(key)
-    response = object.get()
-    return Image.open(response['Body'])
