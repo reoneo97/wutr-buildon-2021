@@ -139,14 +139,13 @@ def lambda_handler(event, context):
     image_np = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
     cv2.imwrite("/tmp/image.jpg", image_np)
 
-    bbox_output = detect("/tmp/image.jpg")
+    with torch.no_grad():
+        bbox_output = detect("/tmp/image.jpg")
     item = {"filename":key,"bbox":bbox_output}
     image_table = db.Table("images")
     image_table.put_item(
         Item=item
     )
-    with torch.no_grad():
-        detect("/tmp/image.jpg")
 
     # prediction = model.predict(img[np.newaxis, ...])
     # predicted_class = imagenet_labels[np.argmax(prediction[0], axis=-1)]
