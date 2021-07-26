@@ -117,7 +117,7 @@ def detect(img):
                     xywh[1] = int(xywh[1] * height)
                     xywh[2] = int(xywh[2] * width)
                     xywh[3] = int(xywh[3] * height)
-                    results.append(dict(cls = names[int(cls)], bbox = xywh))
+                    results.append(dict(cls = names[int(cls)], x = xywh[0], y = xywh[1], w = xywh[2], h = xywh[3]))
                 
     return results
 
