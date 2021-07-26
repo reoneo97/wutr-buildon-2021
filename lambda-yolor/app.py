@@ -140,7 +140,7 @@ def lambda_handler(event, context):
     cv2.imwrite("/tmp/image.jpg", image_np)
 
     bbox_output = detect("/tmp/image.jpg")
-    item = {"id":key,"bbox":bbox_output}
+    item = {"filename":key,"bbox":bbox_output}
     image_table = db.Table("images")
     image_table.put_item(
         Item=item
