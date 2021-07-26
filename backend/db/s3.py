@@ -8,7 +8,7 @@ import io
 
 # TODO: Store unsecure bucket links somewhere else
 PHOTO_BUCKET = "wutr-images2"
-
+REGION_NAME = "ap-southeast-1"
 # TODO: Provide better exception handling
 
 
@@ -39,7 +39,7 @@ def __upload_image(image, file_name: str, bucket: str, object_name=None,):
         object_name = file_name
 
     # Upload the file
-    s3_client = boto3.client('s3')
+    s3_client = boto3.client('s3',region_name=REGION_NAME)
 
     try:
         response = s3_client.upload_fileobj(
