@@ -6,3 +6,5 @@ backend/testing/
 !.elasticbeanstalk/*.global.yml
 test/
 .secrets
+*.pt
+price-prediction/*.csv
