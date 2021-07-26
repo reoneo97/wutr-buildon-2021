@@ -8,6 +8,7 @@ class ListingKey(BaseModel):
 
 class ListingImage(BaseModel):
     filename: str
+    info: List[ListingImageBox] = list()
 
 class Listing(BaseModel):
     name: str
@@ -38,3 +39,11 @@ class ListingFeed(BaseModel):
 class ListingIdFeed(BaseModel):
     ids: List[ListingKey]
     count: Optional[int]
+
+class ListingImageBox(BaseModel):
+    item_name: str
+    x: int
+    y: int
+    w: int
+    h: int
+    

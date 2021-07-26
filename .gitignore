@@ -6,3 +6,4 @@ backend/testing/
 !.elasticbeanstalk/*.global.yml
 test/
 .secrets
+*.pt
