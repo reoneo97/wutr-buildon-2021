@@ -7,3 +7,4 @@ backend/testing/
 test/
 .secrets
 *.pt
+price-prediction/*.csv
