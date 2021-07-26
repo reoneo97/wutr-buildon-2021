@@ -7,6 +7,7 @@ from models.users import User
 from db.s3 import upload_image_s3, download_image_s3
 from db.ops import listings as listing_db
 from db.ops import views
+from db.ops import image as image_db
 from PIL import Image
 from io import BytesIO
 from loguru import logger
@@ -38,7 +39,7 @@ def post_listing(
 
 @router.get("/{listing_id}", response_model=Listing)
 async def get_listing(
-    listing_id: str, user: str = Depends(get_current_username)):
+    listing_id: str, username: str = Depends(get_current_username)):
     key = ListingKey(id=listing_id)
     listing = listing_db.get_listing(key)
     views.add_view(username, listing_id)
@@ -71,7 +72,7 @@ async def upload_image(
 ) -> ListingImage:
     if file.content_type.split("/")[0] != "image":
         raise HTTPException(
-            422, detail="Input image must either be .png or .jpg")
+            422, detail="Input file must be an image")
     logger.info(username)
     filename = upload_image_s3(file)
     response = {"filename": filename}
@@ -79,10 +80,15 @@ async def upload_image(
 
 
 @router.get("/img/{img_id}",)
-async def download_image(
-    img_id: str,
-):
+async def download_image(img_id: str):
     img = download_image_s3(img_id)
     if not img:
         raise HTTPException(423, detail="Image cannot be found")
     return StreamingResponse(img, media_type="image/png")
+
+@router.get("/img/info/{img_id}",response_model=ListingImageInfo)
+async def get_image_info(img_id: str):
+    item = {"filename":img_id}
+    output = image_db.get_listing(item)
+    logger.debug(output)
+    return output
