@@ -41,6 +41,10 @@ def detect(img):
     # Initialize
     device = select_device('cpu')
 
+    # find dimension of image
+    to_read = cv2.imread(img)
+    height, width, _ = to_read.shape
+
     # Load model
     model = Darknet(cfg, imgsz)#.cuda() #if you want cuda remove the comment
 
@@ -93,12 +97,17 @@ def detect(img):
                     s += '%g %ss, ' % (n, names[int(c)])  # add to string
 
                 # Write results
+                results = []
                 for *xyxy, conf, cls in det:
                     # Write to file
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    print(xywh) # for each bounding box, return a list containing [x_center, y_center, width, height]
-
-
+                    xywh[0] = int(xywh[0] * width)
+                    xywh[1] = int(xywh[1] * height)
+                    xywh[2] = int(xywh[2] * width)
+                    xywh[3] = int(xywh[3] * height)
+                    results.append(dict(cls = names[int(cls)], bbox = xywh))
+                
+                print(results)
 
 
 def lambda_handler(event, context):
@@ -112,7 +121,8 @@ def lambda_handler(event, context):
     image_np = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
     cv2.imwrite("/tmp/image.jpg", image_np)
 
-    detect("/tmp/image.jpg")
+    with torch.no_grad():
+        detect("/tmp/image.jpg")
 
     # prediction = model.predict(img[np.newaxis, ...])
     # predicted_class = imagenet_labels[np.argmax(prediction[0], axis=-1)]
