@@ -39,7 +39,7 @@ def __upload_image(image, file_name: str, bucket: str, object_name=None,):
         object_name = file_name
 
     # Upload the file
-    s3_client = boto3.client('s3',region_name=REGION_NAME)
+    s3_client = boto3.client('s3',REGION_NAME=REGION_NAME)
 
     try:
         response = s3_client.upload_fileobj(
