@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from models.users import User
 from models.listings import ListingFeed
 router = APIRouter()
+from loguru import logger
 from .authentication import get_current_user
 
 from db.ops import users_feed as users_feed_db
@@ -21,6 +22,7 @@ async def get_user_feed(
     """
     username = current_user.username
     listings = users_feed_db.get_user_feed(username)
+    logger.debug(listings)
     if not listings:
         raise HTTPException(423,"Listing Feed for User Not Found (Check RecSys?)")
     return {"listings":listings,"count":len(listings)}
