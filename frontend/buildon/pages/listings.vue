@@ -1,7 +1,10 @@
 <template>
   <v-row>
     <v-col class="text-center">
-      <img
+      <no-ssr>
+      <Listing></Listing>
+      </no-ssr>
+      <!-- <img
         src="/v.png"
         alt="Vuetify.js"
         class="mb-5"
@@ -13,7 +16,7 @@
             <em>&mdash;John Johnson</em>
           </small>
         </footer>
-      </blockquote>
+      </blockquote> -->
     </v-col>
   </v-row>
 </template>

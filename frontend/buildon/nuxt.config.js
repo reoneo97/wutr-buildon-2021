@@ -29,7 +29,6 @@ export default {
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
   ],
-
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
@@ -45,13 +44,30 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios',
+    '@nuxtjs/proxy'
   ],
+
+  axios: {
+    // proxy: true, // Can be also an object with default options
+    baseURL: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+    proxyHeaders: false,
+    credentials: false
+  },
+
+  proxy: {
+    '/api/': {
+      target: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+      pathRewrite: { "^/api/": "" },
+      changeOrigin: true
+    }
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,
