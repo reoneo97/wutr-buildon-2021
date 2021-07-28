@@ -38,7 +38,7 @@ For each user contains the listings that the user has interacted with
 - The API will only pull items from this database and then remove them if the user has already clicked on the listing
 - Adding additional Ids to this database will be done by AWS Lambda Functions
 
-## Machine Learning
+# Machine Learning
 
 ### Price Prediction Model
 

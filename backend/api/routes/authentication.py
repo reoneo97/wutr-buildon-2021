@@ -27,7 +27,7 @@ def fake_decode_token(token):
 
 def get_fake_user() -> User:
     return User(
-        username="jinbeblob",
+        username="test_user",
         email="rasdsa@gmail.com",
         full_name="reo",
     )
