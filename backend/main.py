@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from api.api import router as api_router
 from loguru import logger
 from api.routes.authentication import get_current_user, get_fake_user, get_current_username
-from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
