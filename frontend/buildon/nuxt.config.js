@@ -50,18 +50,18 @@ export default {
 
   axios: {
     // proxy: true, // Can be also an object with default options
-    baseURL: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
-    proxyHeaders: false,
-    credentials: false
+    baseURL: 'http://localhost:80/',
+    // proxyHeaders: false,
+    // credentials: false
   },
 
-  proxy: {
-    '/api/': {
-      target: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
-      pathRewrite: { "^/api/": "" },
-      changeOrigin: true
-    }
-  },
+  // proxy: {
+  //   '/api/': {
+  //     target: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+  //     pathRewrite: { "^/api/": "" },
+  //     changeOrigin: true
+  //   }
+  // },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
