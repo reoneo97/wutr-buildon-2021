@@ -45,3 +45,4 @@ jobs:
           version_label: 1
           region: ap-southeast-1
           deployment_package: deploy.zip
+          use_existing_version_if_available: true
