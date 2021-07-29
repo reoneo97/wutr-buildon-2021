@@ -1,9 +1,12 @@
 # Pull the base image with python 3.8 as a runtime for your Lambda
-FROM python:3.8-slim-buster
+FROM public.ecr.aws/lambda/python:3.8
 
 COPY requirements.txt ./
 
 # Install the python requirements from requirements.txt
-RUN pip3 install -r requirements.txt
+RUN python3.8 -m pip install -r requirements.txt
 
-COPY model_weights/ ./model_weights/
+# COPY model_weights/ ./model_weights/
+
+# Set the CMD to your handler
+CMD ["app.price_predict"]

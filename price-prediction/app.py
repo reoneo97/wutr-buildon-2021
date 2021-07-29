@@ -28,8 +28,10 @@ def price_predict(product_name):
     search_embed = model.encode(search_names, convert_to_tensor=True)
     results= util.semantic_search(query_embed,search_embed,top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
-    
-    return data.iloc[idxs][["name","price"]]
+    scores = [j["score"] for j in results[0]]
+    product_list = data.iloc[idxs][["name", "price"]]
+    product_list["score"] = scores
+    return product_list
 
 def load_data():
     table = __get_table("price-info")
@@ -43,4 +45,4 @@ def load_data():
     return items
 
 
-print(price_predict("samsung galaxy"))
+# print(price_predict("samsung galaxy"))
