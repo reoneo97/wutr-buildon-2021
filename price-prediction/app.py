@@ -3,7 +3,7 @@ import random
 import boto3
 from loguru import logger
 import pandas as pd
-model = SentenceTransformer('stsb-mpnet-base-v2', cache_folder="/tmp/")
+
 REGION_NAME = "ap-southeast-1"
 
 
@@ -49,22 +49,24 @@ def load_data():
         response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
         items.extend(response['Items'])
     items = pd.DataFrame.from_dict(items)
+    items["price"] = items["price"].apply(lambda x: float(x))
     return items
 
 def lambda_handler(event, context):
-    input_text = event["text"]
+    input_text = event["product_name"]
     try: 
         output_price = price_predict(input_text)
         response = {
             "statusCode": 200,
             "body": output_price
         }
-    except:
+    except Exception as e:
         response = {
             "statusCode": 404,
-            "body": 50
+            "body": e.message
         }
 
     return response
 
-# print(price_predict("samsung galaxy"))
+# event = {"product_name": "samsung galaxy"}
+# print(lambda_handler(event, None))

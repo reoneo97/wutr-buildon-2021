@@ -2,9 +2,13 @@
 FROM public.ecr.aws/lambda/python:3.8
 
 COPY requirements.txt ./
-
 # Install the python requirements from requirements.txt
 RUN python3.8 -m pip install -r requirements.txt
+
+COPY setup.py ./
+COPY app.py ./
+
+RUN python setup.py
 
 # COPY model_weights/ ./model_weights/
 
