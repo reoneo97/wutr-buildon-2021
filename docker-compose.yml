@@ -8,9 +8,17 @@ services:
             - "8000:8000"
         volumes:
             - $HOME/.aws/credentials:/root/.aws/credentials
-    frontend:
+    nuxt:
         build:
             context: ./frontend
             dockerfile: Dockerfile
         ports:
+            - "3000:3000"
+    nginx:
+        image: nginx:1.19
+        ports: 
             - "80:80"
+        volumes:
+            - "./frontend/default.conf:/etc/nginx/conf.d/default.conf"
+        depends_on: 
+            - nuxt
