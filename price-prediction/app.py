@@ -31,7 +31,14 @@ def price_predict(product_name):
     scores = [j["score"] for j in results[0]]
     product_list = data.iloc[idxs][["name", "price"]]
     product_list["score"] = scores
-    return product_list
+
+    # return weighted average of price
+    score_sum = product_list["score"].sum()
+    weighted_sum = 0
+    for index, row in product_list.iterrows():
+        weighted_sum += row['price'] * row['score'] / score_sum
+        weighted_sum_returned = round(weighted_sum, 2)
+    return weighted_sum_returned
 
 def load_data():
     table = __get_table("price-info")
@@ -44,5 +51,20 @@ def load_data():
     items = pd.DataFrame.from_dict(items)
     return items
 
+def lambda_handler(event, context):
+    input_text = event["text"]
+    try: 
+        output_price = price_predict(input_text)
+        response = {
+            "statusCode": 200,
+            "body": output_price
+        }
+    except:
+        response = {
+            "statusCode": 404,
+            "body": f"{50}"
+        }
+
+    return response
 
 # print(price_predict("samsung galaxy"))

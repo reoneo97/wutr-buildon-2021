@@ -9,4 +9,4 @@ RUN python3.8 -m pip install -r requirements.txt
 # COPY model_weights/ ./model_weights/
 
 # Set the CMD to your handler
-CMD ["app.price_predict"]
+CMD ["app.lambda_handler"]
