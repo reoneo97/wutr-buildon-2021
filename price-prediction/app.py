@@ -62,7 +62,7 @@ def lambda_handler(event, context):
     except:
         response = {
             "statusCode": 404,
-            "body": f"{50}"
+            "body": 50
         }
 
     return response
