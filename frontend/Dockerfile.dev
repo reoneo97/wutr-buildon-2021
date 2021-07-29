@@ -2,13 +2,11 @@ FROM node:14
 
 RUN mkdir -p /usr/src/nuxt-app
 WORKDIR /usr/src/nuxt-app
-COPY buildon/package*.json ./
+COPY buildon/package*.json .
 RUN npm install
-COPY buildon/ ./
-RUN npm run build
+COPY buildon/ .
 
 EXPOSE 3000
 ENV HOST=0.0.0.0
 ENV PORT=3000
-CMD ["npm","run","start"]
-
+CMD ["npm","run","dev"]
