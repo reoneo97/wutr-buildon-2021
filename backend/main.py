@@ -6,10 +6,15 @@ from api.routes.authentication import get_current_user, get_fake_user, get_curre
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
+origins = [
+    "http://localhost",
+    "https://localhost",
+    "http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/",
+    "https://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/"
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
