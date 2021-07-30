@@ -50,7 +50,7 @@ export default {
 
   axios: {
     // proxy: true, // Can be also an object with default options
-    baseURL: 'http://localhost/',
+    baseURL: 'http://localhost:80/',
     headers: {
       'Content-Type': 'application/json'
     }
