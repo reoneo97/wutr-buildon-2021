@@ -7,18 +7,9 @@ from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "https://localhost:3000",
-    "https://localhost:80",
-    "http://localhost:80",
-    "http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com",
-    "https://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com"
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
