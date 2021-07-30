@@ -9,6 +9,8 @@ app = FastAPI()
 origins = [
     "http://localhost",
     "https://localhost",
+    "http://localhost:3000",
+    "https://localhost:3000",
     "http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/",
     "https://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/"
 ]
