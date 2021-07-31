@@ -16,7 +16,9 @@ def upload_image_s3(image):
     filename = __generate_image_filename()
     file_ext = image.content_type.split("/")[1]
     filename = f'{filename}.{file_ext}'
-    __upload_image(image, filename, PHOTO_BUCKET)
+    r = __upload_image(image, filename, PHOTO_BUCKET)
+    if not r:
+        return False
     return filename
 
 def download_image_s3(filename) -> Image.Image or False:

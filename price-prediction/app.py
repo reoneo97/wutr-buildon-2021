@@ -3,7 +3,8 @@ import random
 import boto3
 from loguru import logger
 import pandas as pd
-model = SentenceTransformer('stsb-mpnet-base-v2', cache_folder="/tmp/")
+import torch
+
 REGION_NAME = "ap-southeast-1"
 
 
@@ -26,6 +27,7 @@ def price_predict(product_name):
     query_embed = model.encode(product_name, convert_to_tensor=True)
     search_names = data["name"].tolist()
     search_embed = model.encode(search_names, convert_to_tensor=True)
+
     results= util.semantic_search(query_embed,search_embed,top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
     

@@ -75,7 +75,11 @@ async def upload_image(
             422, detail="Input file must be an image")
     logger.info(username)
     filename = upload_image_s3(file)
-    response = {"filename": filename}
+    if not filename:
+        raise HTTPException(
+            424, detail="Error with uploading file")
+    else:
+        response = {"filename": filename}
     return response
 
 
