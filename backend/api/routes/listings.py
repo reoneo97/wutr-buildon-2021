@@ -98,5 +98,5 @@ async def get_image_info(img_id: str):
     if output:
         output["bbox_len"] = len(output["bbox"])
     else:
-        output['bbox_len'] = 0
+        raise HTTPException(423, detail="Info not found")
     return output
