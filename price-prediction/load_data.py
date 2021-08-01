@@ -24,7 +24,7 @@ def load_s3(filename, bucket="price-prediction-tensors"):
     s3.upload_file(filename, bucket, filename)
 
 
-def load_data(filename):
+def load_data_to_db(filename):
     df = pd.read_csv(filename)
     df = df.loc[:,["id","name","price"]]
     df.to_csv("search_embed.csv", index=False)
@@ -35,23 +35,18 @@ def load_data(filename):
     # save to csv file in s3 bucket
     search_names = df["name"].tolist()
     search_embed = model.encode(search_names, convert_to_tensor=True)
-    a_tensor = search_embed.cpu()
-    a_nparray = a_tensor.numpy()
-    a_bytes = a_nparray.tobytes()
-    with open("search_embed.txt", "wb") as f:
-        f.write(a_bytes)
-    
-    load_s3("search_embed.txt")
-
+    arr = search_embed.cpu().numpy()
+    byte_list = [vec.tobytes() for vec in arr]
+    df["encoded"] = byte_list
     # save to dynamodb
     df_data = df.to_dict(orient="records")
-    logger.debug(df_data)
-    table = __get_table(TABLE_NAME)
+    table = __get_table("price-info")
 
     with table.batch_writer() as writer:
         for item in df_data:
             writer.put_item(Item=item)
     logger.info("Data loaded")
+    return arr
 
 
 def truncateTable(tableName):
@@ -77,6 +72,3 @@ def truncateTable(tableName):
             batch.delete_item(
                 Key={key: each[key] for key in tableKeyNames}
             )
-            
-truncateTable(TABLE_NAME)
-load_data("electronics_products.csv")
