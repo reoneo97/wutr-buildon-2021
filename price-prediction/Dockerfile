@@ -6,9 +6,8 @@ COPY requirements.txt ./
 RUN python3.8 -m pip install -r requirements.txt
 
 COPY setup.py ./
-COPY app.py ./
-
 RUN python setup.py
+COPY app.py ./
 
 # COPY model_weights/ ./model_weights/
 
