@@ -9,4 +9,6 @@ TABLE_NAME = "images"
 
 def get_listing(key)->ListingImageInfo:
     
-    return __get_item(key, table_name=TABLE_NAME)
+    item =  __get_item(key, table_name=TABLE_NAME)
+    logger.debug(f"Item Info: {item}")
+    return item
