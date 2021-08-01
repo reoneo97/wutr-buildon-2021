@@ -90,13 +90,12 @@
                 <!-- <v-hover></v-hover> -->
                 <!-- </v-img> -->
                 </v-card>
-                <v-row v-if="saved">
-                    <h3>Listing Name:</h3>
-                    <v-text-field v-model="itemName" required :placeholder="itemName" @change="updateItem"/>
+                <v-form v-if="saved">
+                    <v-text-field v-model="itemName" placeholder="Select on an item to change its name" label="Listing Name"/>
+                    <v-btn @click="updateItem"> Save Edit </v-btn>
                     <!-- <h2>Listing Category:</h2>
                     <v-text-field v-model="itemClass" required :placeholder="itemClass" @change="updateItem"/> -->
-                    <span> Select on a listing to change the name </span>
-                </v-row>
+                </v-form>
                 <v-row>
                 <v-card
                 v-if="uploaded"
@@ -104,7 +103,7 @@
                 >
                 <img v-if="uploaded" :src="previewImage" class="image-fit">
                     <template v-for="b in bboxes">
-                        <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.width" :h="b.height" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" style="border: 2px solid b.color" class="bbox">
+                        <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.width" :h="b.height" :y="b.top" :x="b.left" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" :style="getStyle(b)">
                             <p class="d-flex align-start pa-2"> {{ b.class }}
                                 <v-spacer/> x
                             </p>
@@ -128,24 +127,26 @@
             <!-- list of item names -->
             <v-list>
                 <h4>Items</h4>
-                <template v-for="(item, i) in items">
-                    <v-list-item :key="i">
-                        <v-list-item-title v-text="item.Name"></v-list-item-title>
+                <!-- <template v-for="(item, i) in items"> -->
+                    <v-list-item-group color="primary" v-model="selectedItem">
+                    <v-list-item v-for="(item, i) in bboxes" :key="i" @click="setActive(item)">
+                        <v-divider :key=i />
+                        <v-list-item-title v-text="item.name"></v-list-item-title>
                     </v-list-item>
-                    <v-divider :key=i />
-                </template>
+                    </v-list-item-group>
+                <!-- </template> -->
             </v-list>
         </v-card>
         <v-row>
             <v-col>
-            <v-btn v-if="uploaded && !saved" @click="reverse">Back</v-btn>
+            <v-btn v-if="uploaded && !saved" @click="reverse">Back</v-btn> <!-- back to upload image page -->
             <v-btn v-if="uploaded && !saved" @click="addTag">Add tags</v-btn>
-            <v-btn v-if="uploaded && !saved" @click="saveTags">Save Tags</v-btn>
-            <v-btn v-if="uploaded && saved && !continued" @click="reverse">Back</v-btn>
-            <v-btn v-if="uploaded && saved && !continued" @click="saveListings">Save Items</v-btn>
-            <v-btn v-if="saved" color="primary" @click="continued=true">Continue</v-btn>
+            <v-btn v-if="uploaded && !saved" @click="saveTags">Save Tags</v-btn> <!-- cont to edit listings page -->
+            <v-btn v-if="uploaded && saved && !continued" @click="reverse">Back</v-btn> <!-- back to adjusting tags -->
+            <v-btn v-if="uploaded && saved && !continued" color="primary" @click="saveListings">Save Items</v-btn> <!-- cont to earnings page -->
+            <v-btn v-if="saved && continued" color="primary" @click="continued=true">Continue</v-btn>
             <!-- <v-btn color="primary" @click="continue = true" nuxt to="/SelectListing">Continue</v-btn> -->
-            <v-btn v-if="continued" @click="reverse">Back</v-btn>
+            <v-btn v-if="continued" @click="reverse">Back</v-btn> <!-- back to listings page -->
 
             </v-col>
         </v-row>
@@ -159,14 +160,14 @@
                 <!-- list of items with categories -->
                 <v-list v-if="!edit" flat>
                     <h4>Items</h4>
-                    <template v-for="(item, i) in items" >
+                    <template v-for="(item, i) in bboxes" >
                         <v-col :key="i">
                     <v-list-item :key="i">
                         <v-list-item-content>
-                            <v-list-item-title v-text="item.Name"></v-list-item-title>
-                            <v-list-item-subtitle v-text="item.Under"></v-list-item-subtitle>
+                            <v-list-item-title v-text="item.name"></v-list-item-title>
+                            <v-list-item-subtitle v-text="item.under"></v-list-item-subtitle>
                             <v-spacer/>
-                            <v-list-item-subtitle>${{ item.Price }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>${{ item.price }}</v-list-item-subtitle>
                             <v-switch inset v-model="list" @change="updateItem"></v-switch>
                         </v-list-item-content>
                     </v-list-item>
@@ -178,15 +179,15 @@
                 <v-list v-else flat>
                     <v-form>
                         <v-subheader>Edit Items</v-subheader>
-                        <v-row v-for="(item, i) in items" :key=i>
+                        <v-row v-for="(item, i) in bboxes" :key=i>
                             <v-text-field
                                 label="Item Name"
-                                v-model="item.Name"
+                                v-model="item.name"
                                 required
                             ></v-text-field>
                             <v-text-field
                                 label="Item Category"
-                                v-model="item.Under"
+                                v-model="item.under"
                                 required
                             ></v-text-field>
                         </v-row>
@@ -199,7 +200,7 @@
         <v-row v-if="!edit">
             <h2> Earnings Report </h2>
             <h3> ${{ earnings }} </h3>
-            <span>Potential Earnings based on <strong> {{ getListed() }} </strong> items selected</span>
+            <span>Potential Earnings based on <strong> {{ listedCount() }} </strong> items selected</span>
         </v-row>
         <v-row>
             <v-btn @click="listItems"> List Items </v-btn>
@@ -281,13 +282,13 @@ export default {
     },
     data() {
         return{
-            items: [],
-            itemName: "Enter the item name",
+            // items: [],
+            itemName: "Select on an item in the list to change its name",
             itemClass: "Enter the item category",
             activeBox: null,
             bbox: false,
             bboxes: [],
-            colors: ['#E97C7A', '#EC917E', '#F2CA89', '#58BA87', '#6DAAC3', '#938DCE'],
+            colors: ['#b32d00', '#6DAAC3', '#ffaa00', '#58BA87', '#e67300', '#938DCE'],
             classes: {},
             previewImage:null,
             image: null,
@@ -298,38 +299,40 @@ export default {
             list: true,
             edit: false,
             earnings: 0,
-            uploadPercentage: 0
+            uploadPercentage: 0,
+            selectedItem: 0
         }
     },
     methods: {
         setActive(b) {
             console.log("Setting active box....", b)
-            this.activeBox = b;
+            this.activeBox = this.bboxes[b.id];
             this.itemName = b.name;
             this.itemClass = b.class;
+            this.selectedItem = b.id
         },
         resize(newRect) {
             // console.log(newRect.__ob__.dep.id);
-            console.log(this.activeBox)
             // const arr = this.bboxes[this.activeBox.class]
             // console.log(arr)
-            let box = this.bboxes[0]
-            console.log("Selected box ", box)
-            if (this.bboxes.length > 1) {
-                console.log("Im here!")
-                const index = this.bboxes.map(function(b) { return b.name; }).indexOf(this.activeBox.name);
-                box = this.bboxes[index]
-                console.log("Found the box: ", box)
-            }
-            box.width = newRect.width
-            box.height = newRect.height
-            box.x = newRect.left
-            box.y = newRect.top
-            // this.width = newRect.width;
-            // this.height = newRect.height;
-            // this.y = newRect.top;
-            // this.x = newRect.left;
-            // this.updateBox(this.activeBox, )
+            // let box = this.bboxes[this.activeBox.id]
+            console.log("Selected box ", this.activeBox)
+            // if (this.bboxes.length > 1) {
+            //     const index = this.bboxes.map(function(b) { return b.name; }).indexOf(this.activeBox.name);
+            //     box = this.bboxes[index]
+            //     console.log("Found the box: ", box)
+            // }
+            const index = this.activeBox.id
+            // const box = this.bboxes[index]
+            this.bboxes[index].width = newRect.width
+            this.bboxes[index].height = newRect.height
+            this.bboxes[index].left = newRect.left
+            this.bboxes[index].top = newRect.top
+            // console.log(`Changed box: ${box}`)
+            // console.log(box)
+            // this.bboxes[index] = box
+            console.log(`Saved box: ${this.bboxes[index]}`)
+            console.log(this.bboxes[index])
         },
         // readURL(file) {
         //     // START: preview original
@@ -416,44 +419,55 @@ export default {
             console.log("Finished adding! ", this.bboxes)
         },
         addTag() {
-            this.createTag(123, 456, 1000, 500, this.itemClass, this.bboxes.length - 1)
+            this.createTag(0, 0, 100, 50, this.itemClass, this.bboxes.length - 1)
+        },
+        getStyle(box) {
+            const boxStyle = {
+                "box-sizing": `border-box`,
+                "border": `2px solid ${box.color}`
+            };
+            return boxStyle;
         },
         // uploadImage() {
         async uploadImage() {
             this.preview = false
             this.uploaded = true
-            // this.bbox = true;
-            // const boxes = 3
-            // for (let i = 0; i < boxes; i++) {
-            //     this.createTag(123, 456, 1000, 500, 'class 1', i)
-            // }
-
-            // const postURL = 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/listings/img/upload_img'; // upload image
+            // const postURL = 'http://buildonapp-env.ebsa-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/listings/img/upload_img'; // upload image
             // const getURL = 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/listings/img/info'; // retrieve x,y,w,h, class from ML model
             const data = new FormData();
             data.append('name', "test-image");
             data.append('file', this.image); // contains image data
 
-            const config = {
-                header : {
-                    // 'Content-Type' : 'image/png'
-                    'Content-Type': 'multipart/form-data',
-                    // 'Access-Control-Allow-Origin': '*'
-               }
-            }
+            // const config = {
+            //     header : {
+            //         // 'Content-Type' : 'image/png'
+            //         'Content-Type': 'multipart/form-data',
+            //         // 'Access-Control-Allow-Origin': '*'
+            //    }
+            // }
 
             // ,onUploadProgress: function( progressEvent ) {
             //     this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
             // }.bind(this));
 
-            const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
-            // const file = await this.$axios.$post(postURL, data, config);
+            const file = await this.$axios.$post('/api/listings/img/upload_img', data);
+            // const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
+            // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
-            // this.$axios.$get(getURL + file, {"progress": true}, config).then(res =>
-            await this.$axios.$get('/api/listings/img/info/' + file.filename, config).then(res =>
+            // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
+            this.bbox = true;
+            const boxes = 3
+            for (let i = 0; i < boxes; i++) {
+                this.createTag(0, 0, 100, 50, `class ${i}`, i)
+            }
+            await this.$axios.$get('/api/listings/img/info/' + file.filename).then(res =>
             {
                 console.log("response for img/info: ", res);
                 this.bbox = true;
+                // const boxes = 3
+                for (let i = 0; i < boxes; i++) {
+                    this.createTag(0, 0, 100, 50, `class ${i}`, i)
+                }
                 // const boxes = response.boxes
             //     for (let i = 0; i < boxes.length; i++) {
             //         const box = boxes[i]
@@ -484,53 +498,60 @@ export default {
         saveTags() {
             // Create list of listings based on the tags
             this.saved = true
-            for (let b=0; b < this.bboxes.length; b++) {
-                const item = {
-                    id: this.bboxes[b].id,
-                    'Name': this.bboxes[b].name,
-                    'Category': this.bboxes[b].class,
-                    'List': this.list
-                }
-                console.log(this.bboxes[b])
-                this.items.push(item)
-            }
+            this.bboxes.map(b => {
+                b.list = this.list
+                return b
+            })
+            // for (let b=0; b < this.bboxes.length; b++) {
+            //     this.bboxes[b]['list'] = this.list
+            // }
             console.log("Items after saving")
-            console.log(this.items)
+            console.log(this.bboxes)
         },
-        saveListings() {
+        // saveListings() {
+        async saveListings() {
             // Saves the item that is being edited
             this.continued = true;
             this.uploaded = false;
 
             // Obtain listing category and price from ML models
-            const newItems = []
-            for (let i=0; i < this.items.length; i++) {
+            // const newItems = []
+            for (let i=0; i < this.bboxes.length; i++) {
+                const item = this.bboxes[i]
+                const catURL = '/production/description'
                 // const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description'
-                // let cat = await this.$axios.get(catURL + i.Name)
-                // const priceURL = ''
-                // let price = await this.$axios.get(priceURL + i.Name)
-                // i.Under = cat
-                // i.Price = price
-                this.items[i].Under = "Placeholder Category";
-                this.items[i].Price = 100;
-                newItems.push(this.items[i])
+                const cat = await this.$axios.get(catURL + item.name)
+                const priceURL = '/production/price'
+                // const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price"
+                const price = await this.$axios.get(priceURL + item.name)
+                item.under = cat
+                item.price = price
+                // item.under = `cat ${item.id}`
+                // item.price = 100 * (i+1)
             }
-            console.log(newItems)
-            this.items = newItems
-            this.earnings = this.items.map(function(i) { return i.Price }).reduce((a, b) => a + b, 0);
+            console.log("After saving listings")
+            console.log(this.bboxes)
+            // this.items = newItems
+            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
         },
         updateItem() {
-            const index = this.items.map(function(i) { return i.id; }).indexOf(this.activeBox.id);
-            this.items[index].Name = this.activeBox.name;
+            // const index = this.items.map(function(i) { return i.id; }).indexOf(this.activeBox.id); // get active index
+            const index = this.activeBox.id
+            // this.bboxes[index].name = this.activeBox.name; // update the name
+            console.log("Im here!")
+            console.log(`itemName is ${this.itemName}`)
+            this.bboxes[index].name = this.itemName; // update the name
+            console.log(`which is stored as ${this.bboxes[index].name}`)
             // this.items[index].Category = this.activeBox.class;
-            this.items[index].List = this.list;
-            this.earnings = this.items.map(function(i) { return i.Price }).reduce((a, b) => a + b, 0);
+            // this.items[index].list = this.list; // update listing bool
+            this.bboxes[index].list = this.list; // update listing bool
+            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
         },
-        getListed() {
-            const listed = this.items.filter(function (i) {
-                return i.list
-            });
-            return listed.length
+        listedCount() {
+            // const listed = this.items.filter(function (i) {
+            const listed = this.bboxes.filter(b => b.list).filter(Boolean).length; // count number of listed items
+            console.log(`Number of listed items: ${listed}`)
+            return listed
         },
         listItems() {
 
