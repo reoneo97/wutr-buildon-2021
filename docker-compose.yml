@@ -9,6 +9,7 @@ services:
         volumes:
             - $HOME/.aws/credentials:/root/.aws/credentials
     nuxt:
+        stdin_open: true
         build:
             context: ./frontend
             dockerfile: Dockerfile.dev
@@ -17,7 +18,6 @@ services:
         volumes:
              - "./frontend/buildon/:/usr/src/nuxt-app/"
              - "/usr/src/nuxt-app/node_modules"
-             - "/usr/src/nuxt-app/.nuxt/dist/server"
     nginx:
         image: nginx:1.19
         ports: 
