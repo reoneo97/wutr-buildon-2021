@@ -95,4 +95,5 @@ async def get_image_info(img_id: str):
     item = {"filename":img_id}
     output = image_db.get_listing(item)
     logger.debug(output)
+    output["bbox_len"] = len(output["bbox"])
     return output

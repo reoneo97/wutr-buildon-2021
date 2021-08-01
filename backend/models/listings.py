@@ -17,7 +17,8 @@ class ListingImage(BaseModel):
     filename: str
 
 class ListingImageInfo(ListingImage):
-    boxes: List[ListingImageBox]
+    bbox: List[ListingImageBox]
+    bbox_len: int
 
 
 class Listing(BaseModel):
