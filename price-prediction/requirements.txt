@@ -1,3 +1,6 @@
+-f https://download.pytorch.org/whl/torch_stable.html 
+torch==1.9.0+cpu
+numpy>=1.18.5
 sentence-transformers
 loguru==0.5.3
 pandas==1.2.4

@@ -3,6 +3,11 @@ import random
 import boto3
 from loguru import logger
 import pandas as pd
+<<<<<<< HEAD
+=======
+import numpy as np
+import torch
+>>>>>>> d65157b72c0159130b92d239b184a0b21012e81c
 
 REGION_NAME = "ap-southeast-1"
 
@@ -19,17 +24,35 @@ def load_model():
     return model
 
 
+def load_from_s3(filename, bucket="price-prediction-tensors"):
+    s3 = boto3.resource('s3')
+    # bucket = s3.Bucket(bucket)
+    s3.meta.client.download_file(bucket, filename, "/tmp/" + filename)
+
+
 def price_predict(product_name):
-    data = load_data()
+    # data = load_data()
     model = load_model()
     
     query_embed = model.encode(product_name, convert_to_tensor=True)
-    search_names = data["name"].tolist()
-    search_embed = model.encode(search_names, convert_to_tensor=True)
-    results= util.semantic_search(query_embed,search_embed,top_k=5)
+    # get txt and csv from s3 bucket
+    load_from_s3("search_embed.csv")
+    load_from_s3("search_embed.txt")
+    data_csv = pd.read_csv("/tmp/search_embed.csv")
+    with open("/tmp/search_embed.txt", 'rb') as f:
+        data_txt = f.read()
+    tensor_nparray = np.frombuffer(data_txt, dtype='float32')
+    tensor_tensor = torch.from_numpy(tensor_nparray)
+    tensor_tensor_reshaped = tensor_tensor.reshape(len(data_csv), int(tensor_tensor.shape[0]/len(data_csv)))
+
+    results= util.semantic_search(query_embed, tensor_tensor_reshaped, top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
     scores = [j["score"] for j in results[0]]
+<<<<<<< HEAD
     product_list = data.iloc[idxs][["name", "price"]]
+=======
+    product_list = data_csv.iloc[idxs][["name", "price"]]
+>>>>>>> d65157b72c0159130b92d239b184a0b21012e81c
     product_list["score"] = scores
 
     # return weighted average of price
@@ -54,6 +77,7 @@ def load_data():
 
 def lambda_handler(event, context):
     input_text = event["product_name"]
+<<<<<<< HEAD
     try: 
         output_price = price_predict(input_text)
         response = {
@@ -67,3 +91,19 @@ def lambda_handler(event, context):
         }
 
     return response
+=======
+    # try: 
+    output_price = price_predict(input_text)
+    response = {
+        "statusCode": 200,
+        "body": output_price
+    }
+    # except Exception as e:
+    #     response = {
+    #         "statusCode": 404,
+    #         "body": 50 # e.message
+    #     }
+
+    return response
+
+>>>>>>> d65157b72c0159130b92d239b184a0b21012e81c
