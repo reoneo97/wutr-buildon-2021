@@ -76,7 +76,7 @@
       cards: [
         { title: 'Noobmaster69', src: 'https://www.wepc.com/wp-content/uploads/2021/03/Custom-Water-Cooling-EKWB.jpg', flex: 12 },
         { title: 'Bobby_images', src: 'https://images.idgesg.net/images/article/2020/05/home-office-ideal-setup-angle-100843210-large.jpg', flex: 6 },
-        { title: 'Nancy', src: 'https://i.pinimg.com/736x/46/4f/76/464f767e50d9aaced829e61ed9539b53.jpg', flex: 6 },
+        { title: 'Nancy', src: 'https://i.pinimg.com/736x/46/4f/76/464f767e50d9aaced829e61ed9539b53.jpg', flex: 6 }
       ],
     }),
   }
