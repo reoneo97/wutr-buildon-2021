@@ -27,7 +27,19 @@ def price_predict(product_name):
     query_embed = model.encode(product_name, convert_to_tensor=True)
     search_names = data["name"].tolist()
     search_embed = model.encode(search_names, convert_to_tensor=True)
+<<<<<<< Updated upstream
 
+=======
+    cos_scores = util.pytorch_cos_sim(query_embed, corpus_embed)[0]
+    top_results = torch.topk(cos_scores, k=5)
+
+    print("\n\n======================\n\n")
+    print("Query:", query)
+    print("\nTop 5 most similar sentences in corpus:")
+
+    for score, idx in zip(top_results[0], top_results[1]):
+        print(corpus[idx], "(Score: {:.4f})".format(score))
+>>>>>>> Stashed changes
     results= util.semantic_search(query_embed,search_embed,top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
     

@@ -11,9 +11,13 @@ services:
     nuxt:
         build:
             context: ./frontend
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.dev
         ports:
             - "3000:3000"
+        volumes:
+             - "./frontend/buildon/:/usr/src/nuxt-app/"
+             - "/usr/src/nuxt-app/node_modules"
+             - "/usr/src/nuxt-app/.nuxt/dist/server"
     nginx:
         image: nginx:1.19
         ports: 
