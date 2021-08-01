@@ -3,7 +3,6 @@ import random
 import boto3
 from loguru import logger
 import pandas as pd
-import torch
 
 REGION_NAME = "ap-southeast-1"
 
@@ -27,23 +26,19 @@ def price_predict(product_name):
     query_embed = model.encode(product_name, convert_to_tensor=True)
     search_names = data["name"].tolist()
     search_embed = model.encode(search_names, convert_to_tensor=True)
-<<<<<<< Updated upstream
-
-=======
-    cos_scores = util.pytorch_cos_sim(query_embed, corpus_embed)[0]
-    top_results = torch.topk(cos_scores, k=5)
-
-    print("\n\n======================\n\n")
-    print("Query:", query)
-    print("\nTop 5 most similar sentences in corpus:")
-
-    for score, idx in zip(top_results[0], top_results[1]):
-        print(corpus[idx], "(Score: {:.4f})".format(score))
->>>>>>> Stashed changes
     results= util.semantic_search(query_embed,search_embed,top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
-    
-    return data.iloc[idxs][["name","price"]]
+    scores = [j["score"] for j in results[0]]
+    product_list = data.iloc[idxs][["name", "price"]]
+    product_list["score"] = scores
+
+    # return weighted average of price
+    score_sum = product_list["score"].sum()
+    weighted_sum = 0
+    for index, row in product_list.iterrows():
+        weighted_sum += row['price'] * row['score'] / score_sum
+        weighted_sum_returned = round(weighted_sum, 2)
+    return weighted_sum_returned
 
 def load_data():
     table = __get_table("price-info")
@@ -54,7 +49,21 @@ def load_data():
         response = table.scan(ExclusiveStartKey=response['LastEvaluatedKey'])
         items.extend(response['Items'])
     items = pd.DataFrame.from_dict(items)
+    items["price"] = items["price"].apply(lambda x: float(x))
     return items
 
+def lambda_handler(event, context):
+    input_text = event["product_name"]
+    try: 
+        output_price = price_predict(input_text)
+        response = {
+            "statusCode": 200,
+            "body": output_price
+        }
+    except Exception as e:
+        response = {
+            "statusCode": 404,
+            "body": e.message
+        }
 
-print(price_predict("samsung galaxy"))
+    return response
