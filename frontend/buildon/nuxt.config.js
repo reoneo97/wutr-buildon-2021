@@ -1,7 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 export default {
   // Target: https://go.nuxtjs.dev/config-target
-  target: 'static',
+  target: 'server',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -29,7 +29,6 @@ export default {
   plugins: [
     { src: '~/plugins/vue-stack-grid', mode: 'client' }
   ],
-
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
 
@@ -45,13 +44,37 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    '@nuxtjs/axios'
   ],
+
+  axios: {
+    // proxy: true, // Can be also an object with default options
+    baseURL: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+    // proxyHeaders: false,
+    // credentials: false
+  },
+  watchers: {
+    webpack: {
+      poll: true
+    }
+  },
+
+  // proxy: {
+  //   '/api/': {
+  //     target: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+  //     pathRewrite: { "^/api/": "" },
+  //     changeOrigin: true
+  //   }
+  // },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: true,
+      dark: false,
       themes: {
         dark: {
           primary: colors.blue.darken2,

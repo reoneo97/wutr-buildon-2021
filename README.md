@@ -37,3 +37,28 @@ For each user contains the listings that the user has interacted with
 - Contains a List of ListingIds for each user. 
 - The API will only pull items from this database and then remove them if the user has already clicked on the listing
 - Adding additional Ids to this database will be done by AWS Lambda Functions
+
+# Machine Learning
+
+### Price Prediction Model
+
+SentenceBert which uses Siamese neural networks to evaluate whether items are similar or not
+- For our case we chose to use a smaller version of BERT DistilBert because of our smaller training size.
+  - Faster inference and because our price dataset is smaller
+  - Allows room for scaling up the model when we get more data
+
+
+@article{DBLP:journals/corr/abs-1908-10084,
+  author    = {Nils Reimers and
+               Iryna Gurevych},
+  title     = {Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks},
+  journal   = {CoRR},
+  volume    = {abs/1908.10084},
+  year      = {2019},
+  url       = {http://arxiv.org/abs/1908.10084},
+  archivePrefix = {arXiv},
+  eprint    = {1908.10084},
+  timestamp = {Thu, 26 Nov 2020 12:13:54 +0100},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-1908-10084.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}

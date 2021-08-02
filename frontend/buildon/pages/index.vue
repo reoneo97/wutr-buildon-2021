@@ -120,10 +120,6 @@ export default {
   justify-content: space-between;
   padding: 20px 20px;
 
-
-  &-title {
-    font-weight: $bold900;
-  }
 }
 </style>
 

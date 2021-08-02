@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -14,6 +14,7 @@
           :to="item.to"
           router
           exact
+          @click="title = item.title"
         >
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
@@ -48,8 +49,8 @@
       >
         <v-icon>mdi-minus</v-icon>
       </v-btn> -->
+      <v-icon>mdi-human</v-icon>
       <v-toolbar-title v-text="title" />
-      <v-spacer />
       <!-- <v-btn
         icon
         @click.stop="rightDrawer = !rightDrawer"
@@ -98,19 +99,19 @@ export default {
       items: [
         {
           icon: 'mdi-apps',
-          title: 'Welcome',
+          title: 'Community',
           to: '/'
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
+          title: 'Listings',
+          to: '/listings'
         }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: '<Logo placeholder>'
+      title: 'Welcome!'
     }
   }
 }
