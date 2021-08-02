@@ -119,7 +119,6 @@ export default {
   flex-flow: row wrap;
   justify-content: space-between;
   padding: 20px 20px;
-
 }
 </style>
 
