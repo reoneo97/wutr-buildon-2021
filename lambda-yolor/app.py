@@ -25,11 +25,19 @@ from models.models import *
 from utils.datasets import *
 from utils.general import *
 
+
 def load_classes(path):
     # Loads *.names file at 'path'
     with open(path, 'r') as f:
         names = f.read().split('\n')
-    return list(filter(None, names))  # filter removes empty strings (such as last line)
+    # filter removes empty strings (such as last line)
+    return list(filter(None, names))
+
+def __create_item(item, table_name):
+    table = __get_table(table_name)
+    table.put_item(
+        Item=item
+    )
 
 def detect(img):
     weights = 'weight/yolor_p6.pt'
@@ -41,12 +49,17 @@ def detect(img):
     # Initialize
     device = select_device('cpu')
 
+    # find dimension of image
+    to_read = cv2.imread(img)
+    height, width, _ = to_read.shape
+
     # Load model
-    model = Darknet(cfg, imgsz)#.cuda() #if you want cuda remove the comment
+    model = Darknet(cfg, imgsz)  # .cuda() #if you want cuda remove the comment
 
     ckpt = torch.load(weights)  # load checkpoint
     try:
-        ckpt['model'] = {k: v for k, v in ckpt['model'].items() if model.state_dict()[k].numel() == v.numel()}
+        ckpt['model'] = {k: v for k, v in ckpt['model'].items() if model.state_dict()[
+            k].numel() == v.numel()}
         model.load_state_dict(ckpt['model'], strict=False)
         # save_weights(model, path=saveto, cutoff=-1)
     except KeyError as e:
@@ -66,7 +79,7 @@ def detect(img):
     img = torch.zeros((1, 3, imgsz, imgsz), device=device)  # init img
     for path, img, im0s in dataset:
         img = torch.from_numpy(img).to(device)
-        img = img.float() 
+        img = img.float()
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
@@ -79,13 +92,16 @@ def detect(img):
 
         # Process detections
         for i, det in enumerate(pred):  # detections per image
+            output = dict()
             p, s, im0 = path, '', im0s
 
             s += '%gx%g ' % img.shape[2:]  # print string
-            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+            # normalization gain whwh
+            gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
             if det is not None and len(det):
                 # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
+                det[:, :4] = scale_coords(
+                    img.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
                 for c in det[:, -1].unique():
@@ -93,28 +109,44 @@ def detect(img):
                     s += '%g %ss, ' % (n, names[int(c)])  # add to string
 
                 # Write results
+                results = []
                 for *xyxy, conf, cls in det:
                     # Write to file
                     xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                    print(xywh) # for each bounding box, return a list containing [x_center, y_center, width, height]
-
-
+                    xywh[0] = int(xywh[0] * width)
+                    xywh[1] = int(xywh[1] * height)
+                    xywh[2] = int(xywh[2] * width)
+                    xywh[3] = int(xywh[3] * height)
+                    results.append(dict(cls = names[int(cls)], x = xywh[0], y = xywh[1], w = xywh[2], h = xywh[3]))
+                
+    return results
 
 
 def lambda_handler(event, context):
     s3 = boto3.client('s3')
+    db = boto3.resource("dynamodb", region_name="ap-southeast-1")
+    
+
+
     bucket_name = event['Records'][0]['s3']['bucket']['name']
     key = event['Records'][0]['s3']['object']['key']
     fileObj = s3.get_object(Bucket=bucket_name, Key=key)
     file_content = fileObj["Body"].read()
 
+
+
     np_array = np.fromstring(file_content, np.uint8)
     image_np = cv2.imdecode(np_array, cv2.IMREAD_COLOR)
     cv2.imwrite("/tmp/image.jpg", image_np)
 
-    detect("/tmp/image.jpg")
+    with torch.no_grad():
+        bbox_output = detect("/tmp/image.jpg")
+    item = {"filename":key,"bbox":bbox_output}
+    image_table = db.Table("images")
+    image_table.put_item(
+        Item=item
+    )
 
     # prediction = model.predict(img[np.newaxis, ...])
     # predicted_class = imagenet_labels[np.argmax(prediction[0], axis=-1)]
     # print('ImageName: {0}, Prediction: {1}'.format(key, predicted_class))
-

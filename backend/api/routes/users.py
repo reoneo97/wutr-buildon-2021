@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models.users import User
-from models.listings import ListingFeed
+from models.listings import ListingFeed, ShortListing, ListingFeedShort
 router = APIRouter()
+from loguru import logger
 from .authentication import get_current_user
 
 from db.ops import users_feed as users_feed_db
@@ -12,7 +13,7 @@ from db.ops import listings as listing_db
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-@router.get("/feed",response_model = ListingFeed)
+@router.get("/feed",response_model = ListingFeedShort)
 async def get_user_feed(
     current_user: User = Depends(get_current_user),limit:int =20, 
     ):
@@ -21,6 +22,7 @@ async def get_user_feed(
     """
     username = current_user.username
     listings = users_feed_db.get_user_feed(username)
+    logger.debug(listings)
     if not listings:
         raise HTTPException(423,"Listing Feed for User Not Found (Check RecSys?)")
     return {"listings":listings,"count":len(listings)}

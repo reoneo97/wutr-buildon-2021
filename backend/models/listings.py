@@ -6,8 +6,20 @@ from datetime import datetime
 class ListingKey(BaseModel):
     id: str
 
+class ListingImageBox(BaseModel):
+    cls: str
+    x: int
+    y: int
+    w: int
+    h: int
+
 class ListingImage(BaseModel):
     filename: str
+
+class ListingImageInfo(ListingImage):
+    bbox: List[ListingImageBox]
+    bbox_len: int
+
 
 class Listing(BaseModel):
     name: str
@@ -38,3 +50,12 @@ class ListingFeed(BaseModel):
 class ListingIdFeed(BaseModel):
     ids: List[ListingKey]
     count: Optional[int]
+
+class ShortListing(BaseModel):
+    id: str
+    images: List[ListingImage]
+
+class ListingFeedShort(BaseModel):
+    listings:List[ShortListing]
+    count: Optional[int]
+
