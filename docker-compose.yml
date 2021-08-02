@@ -16,7 +16,6 @@ services:
         ports:
             - "3000:3000"
         volumes:
-            #  - "./frontend/buildon/:/usr/src/nuxt-app/"
              - "/usr/src/nuxt-app/node_modules"
     nginx:
         image: nginx:1.19
