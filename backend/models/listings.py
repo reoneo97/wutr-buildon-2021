@@ -51,3 +51,11 @@ class ListingIdFeed(BaseModel):
     ids: List[ListingKey]
     count: Optional[int]
 
+class ShortListing(BaseModel):
+    id: str
+    images: List[ListingImage]
+
+class ListingFeedShort(BaseModel):
+    listings:List[ShortListing]
+    count: Optional[int]
+

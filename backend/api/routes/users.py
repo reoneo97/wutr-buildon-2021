@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models.users import User
-from models.listings import ListingFeed
+from models.listings import ListingFeed, ShortListing, ListingFeedShort
 router = APIRouter()
 from loguru import logger
 from .authentication import get_current_user
@@ -13,7 +13,7 @@ from db.ops import listings as listing_db
 async def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
 
-@router.get("/feed",response_model = ListingFeed)
+@router.get("/feed",response_model = ListingFeedShort)
 async def get_user_feed(
     current_user: User = Depends(get_current_user),limit:int =20, 
     ):
