@@ -25,9 +25,12 @@ def __create_item(item, table_name):
 
 def __get_item(item_key, table_name):
     table = __get_table(table_name)
-    response = table.get_item(
-        Key=item_key
-    )
+    try:
+        response = table.get_item(
+            Key=item_key
+        )
+    except ClientError:
+        return None
     if "Item" not in response.keys():
         return None
     return response["Item"]
