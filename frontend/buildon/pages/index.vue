@@ -16,7 +16,7 @@
       :column-min-width="300"
       :gutter-width="15"
       :gutter-height="15"
-      monitor-images-loaded
+      monitor-images-loadedgit 
     >
     <stack-item 
       v-for="(item, i) in images" :key="i" class="img-container" >
@@ -55,20 +55,20 @@ export default {
   
   data() {
     return {
-      images: [
-        "02af94fcf13d11ebb2730242c0a83003.jpeg",
-        "04bca28af2a011eb9b230242ac150002.jpeg",
-        "083aeb62f06911eb80d70242c0a8d003.jpeg",
-        "0a3c2b1f46fe9a8b1dc7af83e9d6583b.jpg",
-        "28e47610ef8f11ebb7de0242ac120003.jpeg",
-      ],
+      images: [],
     };
     
   },
+  async mounted() { 
+    const listings = await this.$axios.$get('/api/users/feed/?limit=20')
+    this.images = listings.listings.map(x => x.images).map(y => y.filename)
+    }
   };
   </script>
   <!--
   
+  
+
   methods: {
     async getLink(url){
     let response = await PostsService.downloadURL({
