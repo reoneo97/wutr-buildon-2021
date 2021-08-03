@@ -1,84 +1,124 @@
 <template>
-  <v-card
-    class="mx-auto"
-    max-width="500"
-  >
-    <v-system-bar
-      color="indigo darken-2"
-      dark
+  <div id="app">
+    <div id="header">
+      <v-app-bar justify="space-around">
+        <v-btn>Carousell</v-btn>
+        <v-text-field hide-details prepend-icon='mdi-magnify'>
+        </v-text-field>
+        <v-btn class="ma-2" color="red" dark to="/listings">
+          SELL
+          
+          <v-icon dark right> mdi-sale </v-icon>
+        </v-btn>
+      </v-app-bar>
+    </div>
+    <stack
+      :column-min-width="300"
+      :gutter-width="15"
+      :gutter-height="15"
+      monitor-images-loaded
     >
-      <v-spacer></v-spacer>
+    <stack-item 
+      v-for="(item, i) in images" :key="i" class="img-container" >
+        <img :src="`https://wutr-images2.s3.ap-southeast-1.amazonaws.com/${item}`" />
+<!-- 
+https://wutr-images2.s3.ap-southeast-1.amazonaws.com/02af94fcf13d11ebb2730242c0a83003.jpeg
+This is to get the images based on the URL link
+<div v-for="(data, key) in imgURL" :key="key">
+  <img :src= "getLink(data)" />
+</div> 
 
-      <v-icon>mdi-window-minimize</v-icon>
+This is to be exported and replaced with data instead.
+  methods: {
+     async getLink(url){
+      let response = await PostsService.downloadURL({
+        imgURL : url
+      })
+      //return response.data
+      let imgdata = await axios.get(response.data)
+      console.log(imgdata.data)
+      return imgdata.data
+     }
+  }
+  
+  --> 
 
-      <v-icon>mdi-window-maximize</v-icon>
-
-      <v-icon>mdi-close</v-icon>
-    </v-system-bar>
-
-    <v-toolbar
-      color="indigo"
-      dark
-    >
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
-
-      <v-toolbar-title>Discover</v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
-    </v-toolbar>
-
-    <v-container fluid>
-      <v-row dense>
-        <v-col
-          v-for="card in cards"
-          :key="card.title"
-          :cols="card.flex"
-        >
-          <v-card>
-            <v-img
-              :src="card.src"
-              class="white--text align-end"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-              height="200px"
-            >
-              <v-card-title v-text="card.title"></v-card-title>
-            </v-img>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn icon>
-                <v-icon>mdi-heart</v-icon>
-              </v-btn>
-
-              <v-btn icon>
-                <v-icon>mdi-bookmark</v-icon>
-              </v-btn>
-
-              <v-btn icon>
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </v-card>
+      </stack-item>
+    </stack>
+  </div>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      cards: [
-        { title: 'Noobmaster69', src: 'https://www.wepc.com/wp-content/uploads/2021/03/Custom-Water-Cooling-EKWB.jpg', flex: 12 },
-        { title: 'Bobby_images', src: 'https://images.idgesg.net/images/article/2020/05/home-office-ideal-setup-angle-100843210-large.jpg', flex: 6 },
-        { title: 'Nancy', src: 'https://i.pinimg.com/736x/46/4f/76/464f767e50d9aaced829e61ed9539b53.jpg', flex: 6 }
+// import axios from "axios";
+export default {
+  components: {},
+  
+  data() {
+    return {
+      images: [
+        "02af94fcf13d11ebb2730242c0a83003.jpeg",
+        "04bca28af2a011eb9b230242ac150002.jpeg",
+        "083aeb62f06911eb80d70242c0a8d003.jpeg",
+        "0a3c2b1f46fe9a8b1dc7af83e9d6583b.jpg",
+        "28e47610ef8f11ebb7de0242ac120003.jpeg",
       ],
-    }),
+    };
+    
+  },
+  };
+  </script>
+  <!--
+  
+  methods: {
+    async getLink(url){
+    let response = await PostsService.downloadURL({
+      imgURL : url
+    })
+    //return response.data
+    let imgdata = await axios.get(response.data)
+    console.log(imgdata.data)
+    return imgdata.data
   }
-</script>
+  }
+  -->
+
+
+
+<style>
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+.img-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: center;
+  overflow: hidden;
+  margin: 0;
+  object-fit: fill;
+  cursor: pointer;
+}
+.img-container img {
+  display: block;
+  margin: 0;
+  width: 100%;
+  height: auto;
+}
+.img-container figcaption {
+  margin: 3px 0;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  padding: 20px 20px;
+}
+</style>
 

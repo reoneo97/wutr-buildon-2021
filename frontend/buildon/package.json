@@ -25,6 +25,8 @@
     "tsutils": "^3.21.0",
     "typescript": "^4.3.5",
     "vue-apexcharts": "^1.6.2",
+    "vue-stack-grid": "^1.2.2",
+    "vue-stack-grid-component": "^1.0.1",
     "vue-drag-resize": "^1.5.4",
     "vue-draggable-resizable": "^2.3.0",
     "vue-ellipse-progress": "^1.3.0",

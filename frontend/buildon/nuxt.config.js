@@ -1,5 +1,4 @@
 import colors from 'vuetify/es5/util/colors'
-
 export default {
   // Target: https://go.nuxtjs.dev/config-target
   target: 'server',
@@ -28,6 +27,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/vue-stack-grid', mode: 'client' }
   ],
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -72,7 +72,6 @@ export default {
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
     theme: {
       dark: false,
       themes: {
@@ -88,6 +87,8 @@ export default {
       }
     }
   },
+
+
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
