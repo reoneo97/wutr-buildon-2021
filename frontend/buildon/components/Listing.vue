@@ -90,12 +90,12 @@
                 <!-- <v-hover></v-hover> -->
                 <!-- </v-img> -->
                 </v-card>
-                <v-form v-if="saved">
+                <v-row v-if="saved">
                     <v-text-field v-model="itemName" placeholder="Select on an item to change its name" label="Listing Name"/>
                     <v-btn @click="updateItem"> Save Edit </v-btn>
                     <!-- <h2>Listing Category:</h2>
                     <v-text-field v-model="itemClass" required :placeholder="itemClass" @change="updateItem"/> -->
-                </v-form>
+                </v-row>
                 <v-row>
                 <v-card
                 v-if="uploaded"
@@ -117,7 +117,40 @@
                 <v-btn v-if="preview" @click="uploadImage" color="primary"> Upload </v-btn>
                 <v-btn v-if="preview" @click="$refs.fileInput.click()" color="grey"><v-card-text> Choose another photo</v-card-text></v-btn>
                 </v-col>
+                <ProgressBar v-if="uploaded && uploadPercentage != 100 && !saved" :options="options" :value="uploadPercentage"/>
+                <!-- <prog></prog> -->
+                <!-- <prog
+                    :data="circles"
+                    :progress="uploadPercentage"
+                    :angle="-90"
+                    color="blue"
+                    :colorFill="colorFillGradient"
+                    emptyColor="#8ec5fc"
+                    :emptyColorFill="emptyColorFillGradient"
+                    :size="300"
+                    :thickness="10"
+                    emptyThickness="10%"
+                    lineMode="in 10"
+                    :legend="true"
+                    :legendValue="180"
+                    legendClass="legend-custom-style"
+                    dash="60 0.9"
+                    animation="reverse 700 400"
+                    :noData="false"
+                    :loading="false"
+                    fontColor="white"
+                    :half="false"
+                    :gap="10"
+                    dot="10 blue"
+                    fontSize="5rem">
+
+                    <span slot="legend-value">/100%</span>
+                    <p slot="legend-caption">GOOD JOB</p>
+
+                    </prog> -->
+            <!-- <VueProgressBar></VueProgressBar> -->
           <!-- <progress v-if="uploaded" max="100" :value.prop="uploadPercentage"></progress> -->
+
         <!-- <vue-draggable-resizable :w="width" :h="height" :parent="true" @dragging="onDrag" @resizing="onResize"> -->
 
         <!-- </v-container> -->
@@ -141,7 +174,7 @@
             <v-col>
             <v-btn v-if="uploaded && !saved" @click="reverse">Back</v-btn> <!-- back to upload image page -->
             <v-btn v-if="uploaded && !saved" @click="addTag">Add tags</v-btn>
-            <v-btn v-if="uploaded && !saved" @click="saveTags">Save Tags</v-btn> <!-- cont to edit listings page -->
+            <v-btn v-if="uploaded && !saved" color="primary" @click="saveTags">Save Tags</v-btn> <!-- cont to edit listings page -->
             <v-btn v-if="uploaded && saved && !continued" @click="reverse">Back</v-btn> <!-- back to adjusting tags -->
             <v-btn v-if="uploaded && saved && !continued" color="primary" @click="saveListings">Save Items</v-btn> <!-- cont to earnings page -->
             <v-btn v-if="saved && continued" color="primary" @click="continued=true">Continue</v-btn>
@@ -156,30 +189,55 @@
             <h2> Select Listings </h2>
         </v-row>
             <v-card>
-                <v-icon @click="edit=true">fas fa-edit</v-icon>
+                <div class="btn">
+                <v-btn @click="edit=true" v-if="!edit">
+                <v-icon>mdi-pencil</v-icon>
+                </v-btn>
+                </div>
                 <!-- list of items with categories -->
                 <v-list v-if="!edit" flat>
-                    <h4>Items</h4>
+                    <!-- <h4>Items</h4> -->
+                    <v-card elevation="0" max-width="1090px">
+                <v-list-item>
+                <!-- <v-col> -->
+                    <v-list-item-title class="font-weight-black">Item</v-list-item-title>
+                    <v-list-item-title class="font-weight-black">Category</v-list-item-title>
+                    <v-list-item-title class="font-weight-black">Price</v-list-item-title>
+                    <!-- <v-divider></v-divider> -->
+                    <!-- <v-list-item-title>Select</v-list-item-title> -->
+                    <!-- <h4>Item</h4>
+                    <h4>Category</h4>
+                    <h4>Price</h4><br>
+                    <h4>Select</h4> -->
+                <!-- </v-col> -->
+                </v-list-item>
+                    </v-card>
                     <template v-for="(item, i) in bboxes" >
-                        <v-col :key="i">
-                    <v-list-item :key="i">
-                        <v-list-item-content>
-                            <v-list-item-title v-text="item.name"></v-list-item-title>
-                            <v-list-item-subtitle v-text="item.under"></v-list-item-subtitle>
-                            <v-spacer/>
-                            <v-list-item-subtitle>${{ item.price }}</v-list-item-subtitle>
-                            <v-switch inset v-model="list" @change="updateItem"></v-switch>
-                        </v-list-item-content>
-                    </v-list-item>
-                        </v-col>
                     <v-divider :key=i />
+                        <!-- <v-row :key="i"> -->
+                    <v-list-item :key="i">
+                        <!-- <v-col :key="i"> -->
+                        <!-- <v-list-item-content> -->
+                            <v-list-item-title v-text="item.name"></v-list-item-title>
+                            <v-list-item-title v-text="item.under"></v-list-item-title>
+                            <v-list-item-title>${{ item.price }}</v-list-item-title>
+                        <!-- </v-list-item-content> -->
+                        <v-switch inset v-model="item.list" @change="updateListing(item)"></v-switch>
+                        <!-- </v-col> -->
+                    </v-list-item>
+                        <!-- </v-row> -->
                     </template>
                 </v-list>
                 <!-- form -->
                 <v-list v-else flat>
+                <div class="btn">
+                    <v-btn @click="editListing"> Cancel </v-btn>
+                </div>
                     <v-form>
                         <v-subheader>Edit Items</v-subheader>
                         <v-row v-for="(item, i) in bboxes" :key=i>
+                            <v-col>
+                            <h4>Item {{ i + 1 }}:</h4>
                             <v-text-field
                                 label="Item Name"
                                 v-model="item.name"
@@ -190,29 +248,51 @@
                                 v-model="item.under"
                                 required
                             ></v-text-field>
+                            <v-text-field
+                                label="Item Price"
+                                v-model="item.price"
+                                required
+                            ></v-text-field>
+                            </v-col>
                         </v-row>
                     </v-form>
-                    <v-btn @click="edit=false"> Save </v-btn>
+                    <v-btn @click="editListing" color="primary"> Save </v-btn>
                 </v-list>
             </v-card>
 
         <!-- Earnings Report -->
         <v-row v-if="!edit">
             <h2> Earnings Report </h2>
-            <h3> ${{ earnings }} </h3>
-            <span>Potential Earnings based on <strong> {{ listedCount() }} </strong> items selected</span>
+          <apexchart v-if="continued" width="380" type="radialBar" :options="chartOptions" :series="series"></apexchart>
+            <v-col>
+            <!-- <h3> ${{ earnings }} </h3> -->
+            <!-- <span>Potential Earnings based on <strong> {{ listedCount() }} </strong> items selected</span> -->
+            </v-col>
         </v-row>
-        <v-row>
-            <v-btn @click="listItems"> List Items </v-btn>
-        </v-row>
+        <v-col v-if="!edit">
+            <v-btn @click="reverse"> Back </v-btn>
+            <v-btn @click="listItems" color="primary"> List Items </v-btn>
+        </v-col>
         </v-sheet>
     </v-container>
     <!-- </div> -->
 </template>
 
 <script>
+// import Vue from 'vue';
 import VueDragResize from 'vue-drag-resize';
-// import Vue from 'vue'
+// import Chartkick from 'vue-chartkick'
+// import Chart from 'chart.js'
+import VueApexCharts from 'vue-apexcharts'
+// import VueEllipseProgress from 'vue-ellipse-progress';
+import ProgressBar from 'vuejs-progress-bar'
+// import VueProgressBar from 'vue-progress-bar';
+
+// Vue.use(Chartkick.use(Chart))
+
+// Chartkick.options = {
+//   colors: ['#A52A2A', '#D3D3D3']
+// }
 // import axios from 'axios'
 // import VueDraggableResizable from 'vue-draggable-resizable'
 // import ImageUploader from 'vue-image-upload-resize'
@@ -273,10 +353,17 @@ import VueDragResize from 'vue-drag-resize';
 //     reader.readAsDataURL(file);
 //   });
 // };
+// Vue.use(VueApexCharts)
+
+// Vue.component('apexchart', VueApexCharts)
 
 export default {
     components: {
-        VueDragResize
+        VueDragResize,
+        apexchart: VueApexCharts,
+        ProgressBar
+        // prog: VueEllipseProgress,
+        // VueProgressBar
         // VueDraggableResizable,
         // ImageUploader
     },
@@ -292,6 +379,7 @@ export default {
             classes: {},
             previewImage:null,
             image: null,
+            filename: '',
             preview: false, // affects 'add/replace' text
             uploaded: false, // affects upload and tag more btn
             saved: false,
@@ -299,8 +387,64 @@ export default {
             list: true,
             edit: false,
             earnings: 0,
+            total: 1000,
             uploadPercentage: 0,
-            selectedItem: 0
+            selectedItem: 0,
+            options: {
+                text: {
+                    color: '#FFFFFF',
+                    shadowEnable: true,
+                    shadowColor: '#000000',
+                    fontSize: 14,
+                    fontFamily: 'Helvetica',
+                    dynamicPosition: false,
+                    hideText: false
+                },
+                progress: {
+                    color: '#2dbd2d',
+                    backgroundColor: '#333333',
+                    inverted: false
+                },
+                layout: {
+                    height: 35,
+                    width: 140,
+                    verticalTextAlign: 61,
+                    horizontalTextAlign: 43,
+                    zeroOffset: 0,
+                    strokeWidth: 30,
+                    progressPadding: 0,
+                    type: 'line' // or circular
+                }
+            },
+            series: [],
+            chartOptions: {
+                chart: {
+                    height: 350,
+                    type: 'radialBar',
+                },
+                plotOptions: {
+                    radialBar: {
+                        hollow: {
+                            size: ""
+                            // size: `${this.earnings/this.total}%`,
+                        }
+                    },
+                },
+                labels: ['Earnings Report'],
+            },
+            // series: [this.earnings, this.total-this.earnings]
+            // options: {
+            //     chart: {
+            //     id: 'vuechart-example'
+            //     },
+            //     xaxis: {
+            //     categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+            //     }
+            // },
+            // series: [{
+            //     name: 'series-1',
+            //     data: [30, 40, 45, 50, 49, 60, 70, 91]
+            // }]
         }
     },
     methods: {
@@ -419,7 +563,8 @@ export default {
             console.log("Finished adding! ", this.bboxes)
         },
         addTag() {
-            this.createTag(0, 0, 100, 50, this.itemClass, this.bboxes.length - 1)
+            const index = this.bboxes.length
+            this.createTag(0, 0, 100, 50, `class ${index}`, index)
         },
         getStyle(box) {
             const boxStyle = {
@@ -428,8 +573,8 @@ export default {
             };
             return boxStyle;
         },
-        // uploadImage() {
-        async uploadImage() {
+        uploadImage() {
+        // async uploadImage() {
             this.preview = false
             this.uploaded = true
             // const postURL = 'http://buildonapp-env.ebsa-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/listings/img/upload_img'; // upload image
@@ -438,53 +583,56 @@ export default {
             data.append('name', "test-image");
             data.append('file', this.image); // contains image data
 
+            console.log("Data for upload_img")
+            console.log(data)
             // const config = {
-            //     header : {
-            //         // 'Content-Type' : 'image/png'
-            //         'Content-Type': 'multipart/form-data',
-            //         // 'Access-Control-Allow-Origin': '*'
-            //    }
+            //     onUploadProgress: function( progressEvent ) {
+            //         this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
+            //     }.bind(this)
             // }
 
-            // ,onUploadProgress: function( progressEvent ) {
-            //     this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
-            // }.bind(this));
-
-            const file = await this.$axios.$post('/api/listings/img/upload_img', data);
+            const file = 'res'
+            // const file = await this.$axios.$post('/listings/img/upload_img', data);
+            this.filename = file
             // const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
             // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
             // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
+            // this.waiting = true
+            // this.$Progress.start()
             this.bbox = true;
             const boxes = 3
             for (let i = 0; i < boxes; i++) {
                 this.createTag(0, 0, 100, 50, `class ${i}`, i)
             }
-            await this.$axios.$get('/api/listings/img/info/' + file.filename).then(res =>
-            {
-                console.log("response for img/info: ", res);
-                this.bbox = true;
-                // const boxes = 3
-                for (let i = 0; i < boxes; i++) {
-                    this.createTag(0, 0, 100, 50, `class ${i}`, i)
-                }
-                // const boxes = response.boxes
-            //     for (let i = 0; i < boxes.length; i++) {
-            //         const box = boxes[i]
-            //         this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, i)
-            //         console.log('image upload response > ', response) // response: output from ML model
+            // await this.$axios.$get('/listings/img/info/' + file.filename, config).then(res =>
+            // {
+            //     console.log("response for img/info: ", res);
+            //     this.bbox = true;
+            //     // const boxes = 3
+            //     for (let i = 0; i < boxes; i++) {
+            //         this.createTag(0, 0, 100, 50, `class ${i}`, i)
             //     }
+            //     // const boxes = response.boxes
+            // //     for (let i = 0; i < boxes.length; i++) {
+            // //         const box = boxes[i]
+            // //         this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, i)
+            // //         console.log('image upload response > ', response) // response: output from ML model
+            // //     }
+            // // })
+            // // To show client-side: Resized bbox
+            // }).catch(error => {
+            //     console.log("Failed!!!!")
+            //     console.log(error)
             // })
-            // To show client-side: Resized bbox
-            }).catch(error => {
-                console.log("Failed!!!!")
-                console.log(error)
-            })
+            // this.$Progress.finish()
+
         },
         reverse() {
             if (this.continued) { // to edit listing details
-                this.uploaded = true
+                this.continued = false
                 this.saved = true
+                this.uploaded = true
             } else if (this.saved) { // to resize boxes, add or delete tags
                 this.uploaded = true
                 this.saved = false;
@@ -508,8 +656,8 @@ export default {
             console.log("Items after saving")
             console.log(this.bboxes)
         },
-        // saveListings() {
-        async saveListings() {
+        saveListings() {
+        // async saveListings() {
             // Saves the item that is being edited
             this.continued = true;
             this.uploaded = false;
@@ -518,21 +666,23 @@ export default {
             // const newItems = []
             for (let i=0; i < this.bboxes.length; i++) {
                 const item = this.bboxes[i]
-                const catURL = '/production/description'
+                // const catURL = '/production/description'
                 // const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description'
-                const cat = await this.$axios.get(catURL + item.name)
-                const priceURL = '/production/price'
+                // const cat = await this.$axios.get(catURL + item.name)
+                // const priceURL = '/production/price'
                 // const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price"
-                const price = await this.$axios.get(priceURL + item.name)
-                item.under = cat
-                item.price = price
-                // item.under = `cat ${item.id}`
-                // item.price = 100 * (i+1)
+                // const price = await this.$axios.get(priceURL + item.name)
+                // item.under = cat
+                // item.price = price
+                item.under = `cat ${item.id}`
+                item.price = 100 * (i+1)
             }
             console.log("After saving listings")
             console.log(this.bboxes)
             // this.items = newItems
-            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
+            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            this.total = this.earnings
+            this.updateEarnings()
         },
         updateItem() {
             // const index = this.items.map(function(i) { return i.id; }).indexOf(this.activeBox.id); // get active index
@@ -544,8 +694,29 @@ export default {
             console.log(`which is stored as ${this.bboxes[index].name}`)
             // this.items[index].Category = this.activeBox.class;
             // this.items[index].list = this.list; // update listing bool
-            this.bboxes[index].list = this.list; // update listing bool
-            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
+        },
+        updateListing(item) {
+            item.list ? this.bboxes[item.id].list = true : this.bboxes[item.id].list = false
+            // this.bboxes[item.id].list = item.list
+            console.log(`Switched listing ${item.name} to ${this.bboxes[item.id].list}`)
+            // console.log("Upon switching....")
+            // console.log(`Current changed: ${this.bboxes[item.id].list}, while the rest are ${this.bboxes}`)
+            // this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
+            this.updateEarnings()
+        },
+        editListing() {
+            this.edit = false
+            this.updateEarnings()
+        },
+        updateEarnings() {
+            this.earnings = this.bboxes.filter(b => b.list).map(e => e.price).reduce((a, b) => parseInt(a) + parseInt(b));
+            const percent = this.earnings/this.total * 100
+            console.log(`updateEarnings: Earnings is now ${this.earnings}`)
+            console.log(`updateEarnings: Total is now ${this.total}`)
+            console.log(`updateEarnings: Percent is now ${percent}`)
+            this.chartOptions.plotOptions.radialBar.hollow.size = `Potential Earnings based on ${this.listedCount()} items selected`
+            this.chartOptions.labels = [`$${this.earnings}`]
+            this.series = [percent]
         },
         listedCount() {
             // const listed = this.items.filter(function (i) {
@@ -554,14 +725,44 @@ export default {
             return listed
         },
         listItems() {
+            for(let b=0; b < this.bboxes.length; b++) {
+                const item = this.bboxes[b]
+                const data = new FormData();
+                data.append('name', item.name);
+                data.append('price', item.price);
+                data.append('for_sale', item.list);
+                data.append('images', [
+                    {
+                        'filename': this.filename // contains image data
+                    }
+                ]);
+                // data.append('tags', );
+                // data.append('description', '');
 
+            }
+
+            // await this.$axios.$post("/api/listings/create", data).then(res =>
+            // {
+            //     console.log("response for listings/create: ", res);
+            // }).catch(error => {
+            //     console.log("Failed!!!!")
+            //     console.log(error)
+            // })
+
+            // const data = {
+            //     "name": "string",
+            //     "description": "string",
+            //     "price": 0,
+            //     "for_sale": true,
+            //     "images": [
+            //         {
+            //         "filename": "string"
+            //         }
+            //     ],
+            //     "tags": []
+            // }
         }
     }
-    // watch: {
-    //     box() {
-    //         this.
-    //     }
-    // }
 }
 </script>
 
@@ -621,4 +822,9 @@ export default {
     object-fit: cover;
 }
 
+.btn {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+}
  </style>

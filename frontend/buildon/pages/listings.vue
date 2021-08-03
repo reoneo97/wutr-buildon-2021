@@ -1,9 +1,9 @@
 <template>
   <v-row>
     <v-col class="text-center">
-      <no-ssr>
+      <client-only>
       <Listing></Listing>
-      </no-ssr>
+      </client-only>
       <!-- <img
         src="/v.png"
         alt="Vuetify.js"
