@@ -18,14 +18,21 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
+    "apexcharts": "^3.27.3",
     "axios": "^0.21.1",
     "core-js": "^3.15.1",
     "nuxt": "^2.15.7",
+    "tsutils": "^3.21.0",
+    "typescript": "^4.3.5",
+    "vue-apexcharts": "^1.6.2",
     "vue-stack-grid": "^1.2.2",
     "vue-stack-grid-component": "^1.0.1",
     "vue-drag-resize": "^1.5.4",
     "vue-draggable-resizable": "^2.3.0",
+    "vue-ellipse-progress": "^1.3.0",
     "vue-image-upload-resize": "^2.3.0",
+    "vue-progress-bar": "^1.0.1",
+    "vuejs-progress-bar": "^1.2.7",
     "vuetify": "^2.5.5"
   },
   "devDependencies": {
