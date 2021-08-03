@@ -7,38 +7,69 @@ class ListingKey(BaseModel):
     id: str
 
 class ListingImageBox(BaseModel):
-    cls: str
+    cls: Optional[str] = None
     x: int
     y: int
     w: int
     h: int
 
-class ListingImage(BaseModel):
-    filename: str
+class ListingInfo(BaseModel):
+    name: str
+    description: str
+    price: Decimal
+    for_sale: bool
+    tags: List[str] = list()  
+    bbox: ListingImageBox  
 
-class ListingImageInfo(ListingImage):
+class ImageName(BaseModel):
+    id: str
+    filename:str
+
+class ListingImageBbox(BaseModel):
+    filename: str
     bbox: List[ListingImageBox]
     bbox_len: int
 
+class ListingImageInfoDb(BaseModel):
+    id:str
+    filename:str
+    listings: List[ListingInfo]
+    user: str
+    created_timestamp: str
+
+class ListingImage(BaseModel):
+    id:str
+    filename: str
+    listings: List[ListingInfo]
+    user: str
+
+class ListingImageCreate(BaseModel):
+
+    filename:str
+    listings: List[ListingInfo]
 
 class Listing(BaseModel):
     name: str
     description: str
     price: Decimal
     for_sale: bool
-    images: List[ListingImage]
+    image: str
     user: str
     tags: List[str] = list()
     created_timestamp: str
     id:Optional[str] = None
 
-class ListingCreate(BaseModel):
+
+class ListingDB(BaseModel):
     name: str
     description: str
     price: Decimal
     for_sale: bool
-    images: List[ListingImage]
+    image: str
+    user: str
     tags: List[str] = list()
+    created_timestamp: str
+    id:Optional[str] = None
 
 class ListingFeed(BaseModel):
     """
@@ -48,14 +79,13 @@ class ListingFeed(BaseModel):
     count: Optional[int]
 
 class ListingIdFeed(BaseModel):
-    ids: List[ListingKey]
+    images: List[str]
     count: Optional[int]
 
 class ShortListing(BaseModel):
     id: str
-    images: List[ListingImage]
+    image: str
 
 class ListingFeedShort(BaseModel):
     listings:List[ShortListing]
     count: Optional[int]
-

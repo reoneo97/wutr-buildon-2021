@@ -18,18 +18,21 @@ router = APIRouter()
 # TODO: Add more async await commands to make the application faster
 
 
-@router.post("/create", response_model=Listing)
+@router.post("/create", response_model=ListingImage)
 def post_listing(
-    listing: ListingCreate, username: str = Depends(get_current_username)
+    listing: ListingImageCreate, username: str = Depends(get_current_username)
 ) -> Listing:
     """
     Creates a listing object given certain parameters. 
     The input will only take in the necessary attributes of the object and add
     in the other required parameters such as username, timestamp and listing id
     """
-    listing = Listing(
+    idx = listing.filename
+    listing = ListingImageInfoDb(
+        id=idx, 
         user=username, created_timestamp=get_current_timestamp(),
         **listing.dict())
+
     db_entry = listing_db.create_listing(listing)
     logger.success(f"Post Request done for {db_entry.id}")
     return db_entry
@@ -37,7 +40,7 @@ def post_listing(
 # TODO: Should this end point return the images as well?
 
 
-@router.get("/{listing_id}", response_model=Listing)
+@router.get("/{listing_id}", response_model=ListingImage)
 async def get_listing(
     listing_id: str, username: str = Depends(get_current_username)):
     key = ListingKey(id=listing_id)
@@ -51,25 +54,17 @@ async def get_listing(
     return listing
 
 
-@router.put("/{listing_id}", response_model=Listing)
-def update_listing(listing_id: str):
-    return {424: "Not Implemented"}
-
-
-@router.get("/search")
-async def search_listing(search_key: str):
-    return {424: "Not Implemented"}
 
 # TODO: Provide better information about the errors
 
 # TODO: Additional Social Media stuff like liking and commenting?
 
 
-@router.post("/img/upload_img", response_model=ListingImage)
+@router.post("/img/upload_img", response_model=ImageName)
 async def upload_image(
     username: str = Depends(get_current_username),
     file: UploadFile = File(...),
-) -> ListingImage:
+) -> ImageName:
     if file.content_type.split("/")[0] != "image":
         raise HTTPException(
             422, detail="Input file must be an image")
@@ -79,7 +74,9 @@ async def upload_image(
         raise HTTPException(
             424, detail="Error with uploading file")
     else:
-        response = {"filename": filename}
+        response = {"filename": filename,
+                     "id": filename.split(".")[0]}
+        logger.info(response)
     return response
 
 
@@ -90,13 +87,38 @@ async def download_image(img_id: str):
         raise HTTPException(423, detail="Image cannot be found")
     return StreamingResponse(img, media_type="image/png")
 
-@router.get("/img/info/{img_id}",response_model=ListingImageInfo)
-async def get_image_info(img_id: str):
+@router.get("/img/{img_id}",response_model=ListingImage)
+async def get_image_bbox(img_id: str):
     item = {"filename":img_id}
-    output = image_db.get_listing(item)
+    output = image_db.get_image_bbox(item)
     logger.debug(output)
     if output:
         output["bbox_len"] = len(output["bbox"])
     else:
         raise HTTPException(423, detail="Info not found")
     return output
+
+@router.get("/img/{img_id}",response_model=ListingImageBbox)
+async def get_image_bbox(img_id: str):
+    item = {"filename":img_id}
+    output = image_db.get_image_bbox(item)
+    logger.debug(output)
+    if output:
+        output["bbox_len"] = len(output["bbox"])
+    else:
+        raise HTTPException(423, detail="Info not found")
+    return output
+
+@router.get("/img/{image_id}", response_model=Listing)
+async def get_image(image_id:str):
+    key = {"id":image_id}
+
+
+@router.put("/{listing_id}", response_model=Listing)
+def update_listing(listing_id: str):
+    return {424: "Not Implemented"}
+
+
+@router.get("/search")
+async def search_listing(search_key: str):
+    return {424: "Not Implemented"}
