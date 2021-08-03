@@ -98,7 +98,7 @@ async def get_image_bbox(img_id: str):
         raise HTTPException(423, detail="Info not found")
     return output
 
-@router.get("/img/bbox/{img_id}",response_model=ListingImageBbox)
+@router.get("/img/{img_id}",response_model=ListingImageBbox)
 async def get_image_bbox(img_id: str):
     item = {"filename":img_id}
     output = image_db.get_image_bbox(item)
@@ -109,9 +109,9 @@ async def get_image_bbox(img_id: str):
         raise HTTPException(423, detail="Info not found")
     return output
 
-@router.get("/img/{image_id}", response_model=Listing)
-async def get_image(image_id:str):
-    key = {"id":image_id}
+# @router.get("/img/{image_id}", response_model=Listing)
+# async def get_image(image_id:str):
+#     key = {"id":image_id}
 
 
 @router.put("/{listing_id}", response_model=Listing)
