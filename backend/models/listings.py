@@ -60,8 +60,6 @@ class Listing(BaseModel):
     id:Optional[str] = None
 
 
-
-
 class ListingDB(BaseModel):
     name: str
     description: str
@@ -72,14 +70,6 @@ class ListingDB(BaseModel):
     tags: List[str] = list()
     created_timestamp: str
     id:Optional[str] = None
-
-class ListingCreate(BaseModel):
-    name: str
-    description: str
-    price: Decimal
-    for_sale: bool
-    tags: List[str] = list()
-    bbox: ListingImageBox
 
 class ListingFeed(BaseModel):
     """
