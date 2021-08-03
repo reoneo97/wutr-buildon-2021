@@ -111,7 +111,7 @@ def create_tables():
         logger.warning("Views table already present")
     try:
         images_table = db.create_table(
-            TableName='images',
+            TableName='image_bbox',
             KeySchema=[
                 {
                     'AttributeName': 'filename',
@@ -121,6 +121,29 @@ def create_tables():
             AttributeDefinitions=[
                 {
                     'AttributeName': 'filename',
+                    'AttributeType': 'S'
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5
+            }
+        )
+        logger.debug("Images Table created")
+    except ClientError as e:
+        logger.warning("Images table already present")
+    try:
+        images_table = db.create_table(
+            TableName='image_info',
+            KeySchema=[
+                {
+                    'AttributeName': 'id',
+                    'KeyType': 'HASH'
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'id',
                     'AttributeType': 'S'
                 }
             ],
