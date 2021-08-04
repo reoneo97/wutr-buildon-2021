@@ -80,23 +80,23 @@ async def upload_image(
     return response
 
 
-@router.get("/img/{img_id}",)
-async def download_image(img_id: str):
-    img = download_image_s3(img_id)
-    if not img:
-        raise HTTPException(423, detail="Image cannot be found")
-    return StreamingResponse(img, media_type="image/png")
+# @router.get("/img/{img_id}",)
+# async def download_image(img_id: str):
+#     img = download_image_s3(img_id)
+#     if not img:
+#         raise HTTPException(423, detail="Image cannot be found")
+#     return StreamingResponse(img, media_type="image/png")
 
-@router.get("/img/{img_id}",response_model=ListingImage)
-async def get_image_bbox(img_id: str):
-    item = {"filename":img_id}
-    output = image_db.get_image_bbox(item)
-    logger.debug(output)
-    if output:
-        output["bbox_len"] = len(output["bbox"])
-    else:
-        raise HTTPException(423, detail="Info not found")
-    return output
+# @router.get("/img/{img_id}",response_model=ListingImage)
+# async def get_image_bbox(img_id: str):
+#     item = {"filename":img_id}
+#     output = image_db.get_image_bbox(item)
+#     logger.debug(output)
+#     if output:
+#         output["bbox_len"] = len(output["bbox"])
+#     else:
+#         raise HTTPException(423, detail="Info not found")
+#     return output
 
 @router.get("/img/{img_id}",response_model=ListingImageBbox)
 async def get_image_bbox(img_id: str):
