@@ -25,7 +25,7 @@ async def get_user_feed(
     logger.debug(listings)
     if not listings:
         raise HTTPException(423,"Listing Feed for User Not Found (Check RecSys?)")
-    return {"listings":listings,"count":len(listings)}
+    return {"listings":listings[:limit],"count":len(listings[:limit])}
 
 @router.get("/my_listings",response_model=ListingFeed)
 async def get_user_listings(
