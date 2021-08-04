@@ -163,18 +163,18 @@
         <!-- </v-row> -->
         <v-card v-if="saved">
 
-            <!-- list of item names -->
-            <v-list>
+            <!--.for_sale of item names -->
+            <v.for_sale>
                 <h4>Items</h4>
                 <!-- <template v-for="(item, i) in items"> -->
-                    <v-list-item-group color="primary" v-model="selectedItem">
-                    <v-list-item v-for="(item, i) in bboxes" :key="i" @click="setActive(item)">
+                    <v.for_sale-item-group color="primary" v-model="selectedItem">
+                    <v.for_sale-item v-for="(item, i) in bboxes" :key="i" @click="setActive(item)">
                         <v-divider :key=i />
-                        <v-list-item-title v-text="item.name"></v-list-item-title>
-                    </v-list-item>
-                    </v-list-item-group>
+                        <v.for_sale-item-title v-text="item.name"></v.for_sale-item-title>
+                    </v.for_sale-item>
+                    </v.for_sale-item-group>
                 <!-- </template> -->
-            </v-list>
+            </v.for_sale>
         </v-card>
         <v-row>
             <v-col>
@@ -200,42 +200,42 @@
                 <v-icon>mdi-pencil</v-icon>
                 </v-btn>
                 </div>
-                <!-- list of items with categories -->
-                <v-list v-if="!edit" flat>
+                <!--.for_sale of items with categories -->
+                <v.for_sale v-if="!edit" flat>
                     <!-- <h4>Items</h4> -->
                     <v-card elevation="0" max-width="1090px">
-                <v-list-item>
+                <v.for_sale-item>
                 <!-- <v-col> -->
-                    <v-list-item-title class="font-weight-black">Item</v-list-item-title>
-                    <v-list-item-title class="font-weight-black">Description</v-list-item-title>
-                    <v-list-item-title class="font-weight-black">Price</v-list-item-title>
+                    <v.for_sale-item-title class="font-weight-black">Item</v.for_sale-item-title>
+                    <v.for_sale-item-title class="font-weight-black">Description</v.for_sale-item-title>
+                    <v.for_sale-item-title class="font-weight-black">Price</v.for_sale-item-title>
                     <!-- <v-divider></v-divider> -->
-                    <!-- <v-list-item-title>Select</v-list-item-title> -->
+                    <!-- <v.for_sale-item-title>Select</v.for_sale-item-title> -->
                     <!-- <h4>Item</h4>
                     <h4>Category</h4>
                     <h4>Price</h4><br>
                     <h4>Select</h4> -->
                 <!-- </v-col> -->
-                </v-list-item>
+                </v.for_sale-item>
                     </v-card>
                     <template v-for="(item, i) in bboxes" >
                     <v-divider :key=i />
                         <!-- <v-row :key="i"> -->
-                    <v-list-item :key="i">
+                    <v.for_sale-item :key="i">
                         <!-- <v-col :key="i"> -->
-                        <!-- <v-list-item-content> -->
-                            <v-list-item-title v-text="item.name"></v-list-item-title>
-                            <v-list-item-title v-text="item.desc"></v-list-item-title>
-                            <v-list-item-title>${{ item.price }}</v-list-item-title>
-                        <!-- </v-list-item-content> -->
-                        <v-switch inset v-model="item.list" @change="updateListing(item)"></v-switch>
+                        <!-- <v.for_sale-item-content> -->
+                            <v.for_sale-item-title v-text="item.name"></v.for_sale-item-title>
+                            <v.for_sale-item-title v-text="item.description"></v.for_sale-item-title>
+                            <v.for_sale-item-title>${{ item.price }}</v.for_sale-item-title>
+                        <!-- </v.for_sale-item-content> -->
+                        <v-switch inset v-model="item.for_sale" @change="updateListing(item)"></v-switch>
                         <!-- </v-col> -->
-                    </v-list-item>
+                    </v.for_sale-item>
                         <!-- </v-row> -->
                     </template>
-                </v-list>
+                </v.for_sale>
                 <!-- form -->
-                <v-list v-else flat>
+                <v.for_sale v-else flat>
                 <div class="btn">
                     <v-btn @click="editListing"> Cancel </v-btn>
                 </div>
@@ -251,7 +251,7 @@
                             ></v-text-field>
                             <v-text-field
                                 label="Item Description"
-                                v-model="item.desc"
+                                v-model="item.description"
                                 required
                             ></v-text-field>
                             <v-text-field
@@ -263,7 +263,7 @@
                         </v-row>
                     </v-form>
                     <v-btn @click="editListing" color="primary"> Save </v-btn>
-                </v-list>
+                </v.for_sale>
             </v-card>
 
         <!-- Earnings Report -->
@@ -383,7 +383,7 @@ export default {
     data() {
         return{
             // items: [],
-            itemName: "Select on an item in the list to change its name",
+            itemName: "Select on an item in the.for_sale to change its name",
             itemClass: "Enter the item category",
             activeBox: null,
             bbox: false,
@@ -397,7 +397,6 @@ export default {
             uploaded: false, // affects upload and tag more btn
             saved: false,
             continued: false,
-            list: true,
             edit: false,
             earnings: 0,
             total: 1000,
@@ -554,11 +553,13 @@ export default {
             const box = {
                 'id': i,
                 'name': "Item " + i,
-                'class': c,
-                'left': x,
-                'top': y,
-                'width': w,
-                'height': h,
+                'bbox':{
+                    'cls': c,
+                    'x': x,
+                    'y': y,
+                    'w': w,
+                    'h': h
+                },
                 'color': this.colors[i]
             }
             if (c in this.classes) {
@@ -645,9 +646,11 @@ export default {
                     this.done = true
                     if (res.bbox_len) { // if there are bounding boxes
                         const boxes = res.bbox
+                        const name = res.filename.split(".")[0]
                         for (let i = 0; i < boxes.length; i++) {
                             const box = boxes[i]
-                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, i)
+                            
+                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, name )
                         }
                     } else { // create placeholder boxes
                         this.bbox = true;
@@ -682,14 +685,14 @@ export default {
             }
         },
         saveTags() {
-            // Create list of listings based on the tags
+            // Create.for_sale of listings based on the tags
             this.saved = true
             this.bboxes.map(b => {
-                b.list = this.list
+                b.for_sale = this.for_sale
                 return b
             })
             // for (let b=0; b < this.bboxes.length; b++) {
-            //     this.bboxes[b]['list'] = this.list
+            //     this.bboxes[b][.for_sale'] = this.for_sale
             // }
             console.log("Items after saving")
             console.log(this.bboxes)
@@ -705,17 +708,22 @@ export default {
             for (let i=0; i < this.bboxes.length; i++) {
                 const item = this.bboxes[i]
                 // const catURL = '/production/description'
-                const ProductName =  {
+                let ProductName =  {
                     "text":item.name
                 }
                 const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description/'
                 const cat = await this.$axios.$post(catURL,ProductName)
+                console.log(cat)
                 // const priceURL = '/production/price'
+                ProductName =  {
+                    "product_name":item.name
+                }
                 const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price/"
                 const price = await this.$axios.$post(priceURL,ProductName)
-                item.desc = cat
-                item.price = price
-                // item.desc = `cat ${item.id}`
+                console.log(price)
+                item.description = cat.body
+                item.price = price.body
+                // item.description = `cat ${item.id}`
                 // item.price = 100 * (i+1)
             }
             console.log("After saving listings")
@@ -734,14 +742,14 @@ export default {
             this.bboxes[index].name = this.itemName; // update the name
             console.log(`which is stored as ${this.bboxes[index].name}`)
             // this.items[index].Category = this.activeBox.class;
-            // this.items[index].list = this.list; // update listing bool
+            // this.items[index].for_sale = this.for_sale; // update listing bool
         },
         updateListing(item) {
-            item.list ? this.bboxes[item.id].list = true : this.bboxes[item.id].list = false
-            // this.bboxes[item.id].list = item.list
-            console.log(`Switched listing ${item.name} to ${this.bboxes[item.id].list}`)
+            item.for_sale ? this.bboxes[item.id].for_sale = true : this.bboxes[item.id].for_sale = false
+            // this.bboxes[item.id].for_sale = item.for_sale
+            console.log(`Switched listing ${item.name} to ${this.bboxes[item.id].for_sale}`)
             // console.log("Upon switching....")
-            // console.log(`Current changed: ${this.bboxes[item.id].list}, while the rest are ${this.bboxes}`)
+            // console.log(`Current changed: ${this.bboxes[item.id].for_sale}, while the rest are ${this.bboxes}`)
             // this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => a + b, 0);
             this.updateEarnings()
         },
@@ -750,7 +758,7 @@ export default {
             this.updateEarnings()
         },
         updateEarnings() {
-            const listings = this.bboxes.filter(b => b.list).map(e => e.price)
+            const listings = this.bboxes.filter(b => b.for_sale).map(e => e.price)
             listings.length ? this.earnings = listings.reduce((a, b) => parseInt(a) + parseInt(b)) : this.earnings = 0
             const percent = parseInt(Math.round(this.earnings/this.total * 100))
             console.log(`updateEarnings: Earnings is now ${this.earnings}`)
@@ -793,7 +801,7 @@ export default {
         },
         listedCount() {
             // const listed = this.items.filter(function (i) {
-            const listed = this.bboxes.filter(b => b.list).filter(Boolean).length; // count number of listed items
+            const listed = this.bboxes.filter(b => b.for_sale).filter(Boolean).length; // count number of listed items
             console.log(`Number of listed items: ${listed}`)
             return listed
         },
@@ -801,15 +809,18 @@ export default {
         listItems() {
             for(let b=0; b < this.bboxes.length; b++) {
                 const item = this.bboxes[b]
-                const data = new FormData();
-                data.append('name', item.name);
-                data.append('price', item.price);
-                data.append('for_sale', item.list);
-                data.append('images', [
-                    {
-                        'filename': this.filename // contains image data
-                    }
-                ]);
+                const data = {
+                    'filename':item.id
+                }
+                // const data = new FormData();
+                // data.append('name', item.name);
+                // data.append('price', item.price);
+                // data.append('for_sale', item.for_sale);
+                // data.append('images', [
+                //     {
+                //         'filename': this.filename // contains image data
+                //     }
+                // ]);
                 // data.append('tags', );
                 // data.append('description', '');
 
