@@ -102,22 +102,28 @@
                 class="image-max"
                 >
                 <img v-if="uploaded" :src="previewImage" class="image-fit">
-                    <template v-for="b in bboxes">
+                <!-- <v-fade-transition> -->
+                <v-overlay v-if="uploaded && !done && !saved" max-width="20px" absolute>
+                <v-row class="d-flex">
+                <ProgressBar :options="options" :value="uploadPercentage"/>
+                </v-row>
+                </v-overlay>
+                <!-- </v-fade-transition> -->
+                    <template v-for="b in bboxes" class="d-flex align-end">
                         <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.width" :h="b.height" :y="b.top" :x="b.left" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" :style="getStyle(b)">
-                            <p class="d-flex align-start pa-2"> {{ b.class }}
-                                <v-spacer/> x
-                            </p>
-                            <p>{{ b.top }} х {{ b.left }} </p>
-                            <p>{{ b.width }} х {{ b.height }}</p>
+                            <p class="d-flex align-start pa-2"> {{ b.class }} </p>
+                                <!-- <v-spacer /> -->
+                                <v-card class="d-flex align-end pa-2" @click="deleteTag(b)"> x </v-card>
+                            <!-- <p>{{ b.top }} х {{ b.left }} </p>
+                            <p>{{ b.width }} х {{ b.height }}</p> -->
                         </VueDragResize>
                     </template>
                 </v-card>
                 </v-row>
-                <v-col>
+                <v-row>
                 <v-btn v-if="preview" @click="uploadImage" color="primary"> Upload </v-btn>
                 <v-btn v-if="preview" @click="$refs.fileInput.click()" color="grey"><v-card-text> Choose another photo</v-card-text></v-btn>
-                </v-col>
-                <ProgressBar v-if="uploaded && uploadPercentage != 100 && !saved" :options="options" :value="uploadPercentage"/>
+                </v-row>
                 <!-- <prog></prog> -->
                 <!-- <prog
                     :data="circles"
@@ -201,7 +207,7 @@
                 <v-list-item>
                 <!-- <v-col> -->
                     <v-list-item-title class="font-weight-black">Item</v-list-item-title>
-                    <v-list-item-title class="font-weight-black">Category</v-list-item-title>
+                    <v-list-item-title class="font-weight-black">Description</v-list-item-title>
                     <v-list-item-title class="font-weight-black">Price</v-list-item-title>
                     <!-- <v-divider></v-divider> -->
                     <!-- <v-list-item-title>Select</v-list-item-title> -->
@@ -219,7 +225,7 @@
                         <!-- <v-col :key="i"> -->
                         <!-- <v-list-item-content> -->
                             <v-list-item-title v-text="item.name"></v-list-item-title>
-                            <v-list-item-title v-text="item.under"></v-list-item-title>
+                            <v-list-item-title v-text="item.desc"></v-list-item-title>
                             <v-list-item-title>${{ item.price }}</v-list-item-title>
                         <!-- </v-list-item-content> -->
                         <v-switch inset v-model="item.list" @change="updateListing(item)"></v-switch>
@@ -244,8 +250,8 @@
                                 required
                             ></v-text-field>
                             <v-text-field
-                                label="Item Category"
-                                v-model="item.under"
+                                label="Item Description"
+                                v-model="item.desc"
                                 required
                             ></v-text-field>
                             <v-text-field
@@ -261,14 +267,21 @@
             </v-card>
 
         <!-- Earnings Report -->
-        <v-row v-if="!edit">
-            <h2> Earnings Report </h2>
-          <apexchart v-if="continued" width="380" type="radialBar" :options="chartOptions" :series="series"></apexchart>
+        <!-- <v-row v-if="!edit"> -->
+            <template v-if="!edit">
             <v-col>
-            <!-- <h3> ${{ earnings }} </h3> -->
-            <!-- <span>Potential Earnings based on <strong> {{ listedCount() }} </strong> items selected</span> -->
+            <h2> Earnings Report </h2>
+            <span>Potential Earnings based on <strong> {{ listedCount() }} </strong> items selected</span>
+            <v-row>
+          <apexchart v-if="continued" width="380" type="radialBar" :options="chartOptions" :series="series"></apexchart>
+            </v-row>
             </v-col>
-        </v-row>
+          <!-- Potential Earnings based on {{ listedCount() }} items selected -->
+            <!-- <v-col> -->
+            <!-- <h3> ${{ earnings }} </h3> -->
+            <!-- </v-col> -->
+        <!-- </v-row> -->
+            </template>
         <v-col v-if="!edit">
             <v-btn @click="reverse"> Back </v-btn>
             <v-btn @click="listItems" color="primary"> List Items </v-btn>
@@ -286,6 +299,7 @@ import VueDragResize from 'vue-drag-resize';
 import VueApexCharts from 'vue-apexcharts'
 // import VueEllipseProgress from 'vue-ellipse-progress';
 import ProgressBar from 'vuejs-progress-bar'
+// import axios from 'axios'
 // import VueProgressBar from 'vue-progress-bar';
 
 // Vue.use(Chartkick.use(Chart))
@@ -293,7 +307,6 @@ import ProgressBar from 'vuejs-progress-bar'
 // Chartkick.options = {
 //   colors: ['#A52A2A', '#D3D3D3']
 // }
-// import axios from 'axios'
 // import VueDraggableResizable from 'vue-draggable-resizable'
 // import ImageUploader from 'vue-image-upload-resize'
 
@@ -361,7 +374,7 @@ export default {
     components: {
         VueDragResize,
         apexchart: VueApexCharts,
-        ProgressBar
+        ProgressBar,
         // prog: VueEllipseProgress,
         // VueProgressBar
         // VueDraggableResizable,
@@ -389,6 +402,7 @@ export default {
             earnings: 0,
             total: 1000,
             uploadPercentage: 0,
+            done: true,
             selectedItem: 0,
             options: {
                 text: {
@@ -401,7 +415,7 @@ export default {
                     hideText: false
                 },
                 progress: {
-                    color: '#2dbd2d',
+                    color: '#1976D2',
                     backgroundColor: '#333333',
                     inverted: false
                 },
@@ -416,35 +430,23 @@ export default {
                     type: 'line' // or circular
                 }
             },
-            series: [],
+            series: [70],
             chartOptions: {
                 chart: {
+                    id: 'mychart',
                     height: 350,
                     type: 'radialBar',
                 },
-                plotOptions: {
-                    radialBar: {
-                        hollow: {
-                            size: ""
-                            // size: `${this.earnings/this.total}%`,
-                        }
-                    },
-                },
+                // plotOptions: {
+                //     radialBar: {
+                //         hollow: {
+                //             size: "70%"
+                //             // size: `${this.earnings/this.total}%`,
+                //         }
+                //     },
+                // },
                 labels: ['Earnings Report'],
             },
-            // series: [this.earnings, this.total-this.earnings]
-            // options: {
-            //     chart: {
-            //     id: 'vuechart-example'
-            //     },
-            //     xaxis: {
-            //     categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
-            //     }
-            // },
-            // series: [{
-            //     name: 'series-1',
-            //     data: [30, 40, 45, 50, 49, 60, 70, 91]
-            // }]
         }
     },
     methods: {
@@ -460,23 +462,28 @@ export default {
             // const arr = this.bboxes[this.activeBox.class]
             // console.log(arr)
             // let box = this.bboxes[this.activeBox.id]
-            console.log("Selected box ", this.activeBox)
-            // if (this.bboxes.length > 1) {
-            //     const index = this.bboxes.map(function(b) { return b.name; }).indexOf(this.activeBox.name);
-            //     box = this.bboxes[index]
-            //     console.log("Found the box: ", box)
-            // }
-            const index = this.activeBox.id
-            // const box = this.bboxes[index]
-            this.bboxes[index].width = newRect.width
-            this.bboxes[index].height = newRect.height
-            this.bboxes[index].left = newRect.left
-            this.bboxes[index].top = newRect.top
-            // console.log(`Changed box: ${box}`)
-            // console.log(box)
-            // this.bboxes[index] = box
-            console.log(`Saved box: ${this.bboxes[index]}`)
-            console.log(this.bboxes[index])
+            try {
+                console.log("Selected box ", this.activeBox)
+                // if (this.bboxes.length > 1) {
+                //     const index = this.bboxes.map(function(b) { return b.name; }).indexOf(this.activeBox.name);
+                //     box = this.bboxes[index]
+                //     console.log("Found the box: ", box)
+                // }
+                const index = this.activeBox.id
+                // const box = this.bboxes[index]
+                this.bboxes[index].width = newRect.width
+                this.bboxes[index].height = newRect.height
+                this.bboxes[index].left = newRect.left
+                this.bboxes[index].top = newRect.top
+                // console.log(`Changed box: ${box}`)
+                // console.log(box)
+                // this.bboxes[index] = box
+                console.log(`Saved box: ${this.bboxes[index]}`)
+                console.log(this.bboxes[index])
+            } catch(error) {
+                console.log(`Cannot resize box!!! ${error}`)
+                this.activeBox = this.bboxes[0]
+            }
         },
         // readURL(file) {
         //     // START: preview original
@@ -566,6 +573,16 @@ export default {
             const index = this.bboxes.length
             this.createTag(0, 0, 100, 50, `class ${index}`, index)
         },
+        deleteTag(item) {
+            try {
+                const filtered = this.bboxes.filter(i => i.id !== item.id)
+                this.bboxes = filtered
+                this.activeBox = this.bboxes[0]
+                console.log(`this.bboxes are now: ${this.bboxes}`)
+            } catch(error) {
+                console.log(`cannot delete.... ${item}`)
+            }
+        },
         getStyle(box) {
             const boxStyle = {
                 "box-sizing": `border-box`,
@@ -573,8 +590,8 @@ export default {
             };
             return boxStyle;
         },
-        uploadImage() {
-        // async uploadImage() {
+        // uploadImage() {
+        async uploadImage() {
             this.preview = false
             this.uploaded = true
             // const postURL = 'http://buildonapp-env.ebsa-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/listings/img/upload_img'; // upload image
@@ -585,46 +602,65 @@ export default {
 
             console.log("Data for upload_img")
             console.log(data)
-            // const config = {
-            //     onUploadProgress: function( progressEvent ) {
-            //         this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
-            //     }.bind(this)
-            // }
+            const config = {
+                onDownloadProgress: (progressEvent) => {
+                    console.log('Downloading...')
+                    console.log(progressEvent)
+                    this.done = false
+                    if (progressEvent && this.uploadPercentage < 100) {
+                        this.uploadPercentage += 4
+                    }
+                    // const total = parseFloat(progressEvent.currentTarget.responseHeaders['Content-Length'])
+                    // const current = progressEvent.currentTarget.response.length
+                    // console.log(`Total is ${total}`)
+                    // console.log(`Current is ${current}`)
+                    // this.uploadPercentage = Math.floor(current / total * 100)
+                    // console.log(`total is ${progressEvent.total}`)
+                    // this.uploadPercentage = parseInt( Math.round( ( progressEvent.loaded / progressEvent.total ) * 100 ));
+                    // console.log("upload percentage is:", this.uploadPercentage)
+                } // .bind(this)
+            }
 
-            const file = 'res'
-            // const file = await this.$axios.$post('/listings/img/upload_img', data);
+            // const file = 'res'
+            const file = await this.$axios.$post('/api/listings/img/upload_img', data);
             this.filename = file
             // const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
             // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
-            // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
-            // this.waiting = true
-            // this.$Progress.start()
-            this.bbox = true;
-            const boxes = 3
-            for (let i = 0; i < boxes; i++) {
-                this.createTag(0, 0, 100, 50, `class ${i}`, i)
+            while (this.uploadPercentage !== 100) {
+
+                // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
+                // this.waiting = true
+                // this.$Progress.start()
+                // this.bbox = true;
+                // const boxes = 3
+                // for (let i = 0; i < boxes; i++) {
+                //     this.createTag(0, 0, 100, 50, `class ${i}`, i)
+                // }
+                await this.$axios.$get('/api/listings/img/' + file.filename, config).then(res =>
+                {
+                    console.log("response for img/info: ", res);
+                    this.uploadPercentage = 0
+                    this.done = true
+                    if (res.bbox_len) { // if there are bounding boxes
+                        const boxes = res.bbox
+                        for (let i = 0; i < boxes.length; i++) {
+                            const box = boxes[i]
+                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, i)
+                        }
+                    } else { // create placeholder boxes
+                        this.bbox = true;
+                        for (let i = 0; i < 3; i++) {
+                            this.createTag(0, 0, 100, 50, `class ${i}`, i)
+                        }
+                    }
+                // To show client-side: Resized bbox
+                }).catch(error => {
+                    console.log("Failed!!!!")
+                    console.log(error)
+                })
             }
-            // await this.$axios.$get('/listings/img/info/' + file.filename, config).then(res =>
-            // {
-            //     console.log("response for img/info: ", res);
-            //     this.bbox = true;
-            //     // const boxes = 3
-            //     for (let i = 0; i < boxes; i++) {
-            //         this.createTag(0, 0, 100, 50, `class ${i}`, i)
-            //     }
-            //     // const boxes = response.boxes
-            // //     for (let i = 0; i < boxes.length; i++) {
-            // //         const box = boxes[i]
-            // //         this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, i)
-            // //         console.log('image upload response > ', response) // response: output from ML model
-            // //     }
-            // // })
-            // // To show client-side: Resized bbox
-            // }).catch(error => {
-            //     console.log("Failed!!!!")
-            //     console.log(error)
-            // })
+
             // this.$Progress.finish()
 
         },
@@ -656,8 +692,8 @@ export default {
             console.log("Items after saving")
             console.log(this.bboxes)
         },
-        saveListings() {
-        // async saveListings() {
+        // saveListings() {
+        async saveListings() {
             // Saves the item that is being edited
             this.continued = true;
             this.uploaded = false;
@@ -667,20 +703,20 @@ export default {
             for (let i=0; i < this.bboxes.length; i++) {
                 const item = this.bboxes[i]
                 // const catURL = '/production/description'
-                // const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description'
-                // const cat = await this.$axios.get(catURL + item.name)
+                const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description/'
+                const cat = await this.$axios.get(catURL + item.name)
                 // const priceURL = '/production/price'
-                // const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price"
-                // const price = await this.$axios.get(priceURL + item.name)
-                // item.under = cat
-                // item.price = price
-                item.under = `cat ${item.id}`
-                item.price = 100 * (i+1)
+                const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price/"
+                const price = await this.$axios.get(priceURL + item.name)
+                item.desc = cat
+                item.price = price
+                // item.desc = `cat ${item.id}`
+                // item.price = 100 * (i+1)
             }
             console.log("After saving listings")
             console.log(this.bboxes)
             // this.items = newItems
-            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            this.earnings = this.bboxes.map(b => b.price).reduce((a, b) => parseInt(a) + parseInt(b));
             this.total = this.earnings
             this.updateEarnings()
         },
@@ -709,14 +745,46 @@ export default {
             this.updateEarnings()
         },
         updateEarnings() {
-            this.earnings = this.bboxes.filter(b => b.list).map(e => e.price).reduce((a, b) => parseInt(a) + parseInt(b));
-            const percent = this.earnings/this.total * 100
+            const listings = this.bboxes.filter(b => b.list).map(e => e.price)
+            listings.length ? this.earnings = listings.reduce((a, b) => parseInt(a) + parseInt(b)) : this.earnings = 0
+            const percent = parseInt(Math.round(this.earnings/this.total * 100))
             console.log(`updateEarnings: Earnings is now ${this.earnings}`)
             console.log(`updateEarnings: Total is now ${this.total}`)
             console.log(`updateEarnings: Percent is now ${percent}`)
-            this.chartOptions.plotOptions.radialBar.hollow.size = `Potential Earnings based on ${this.listedCount()} items selected`
-            this.chartOptions.labels = [`$${this.earnings}`]
+            // this.chartOptions.plotOptions.radialBar.hollow.size = `${percent}%`
+            this.chartOptions = {...this.chartOptions, ...{
+                // plotOptions: {
+                //     radialBar: {
+                //         hollow: {
+                //             // size: `${percent}%`
+                //         }
+                //     }
+                // },
+                labels: [`$${this.earnings}`]
+            }};
+            // In the same way, update the series option
             this.series = [percent]
+            // this.chartOptions.plotOptions.radialBar.hollow.size = `Potential Earnings based on ${this.listedCount()} items selected`
+            // this.chartOptions.labels = [`$${this.earnings}`]
+            console.log(`chartOptions.labels is ${this.chartOptions.labels}`)
+            // this.series = [percent]
+            // ApexCharts.exec('mychart', 'updateOptions', {
+            //     xaxis: {
+            //         labels: {
+            //             show: false
+            //         }
+            //     }
+            //     },
+            //     false, true);
+            // ApexCharts.exec('mychart', 'updateSeries', [{
+            //     data: [32, 44, 31, 41, 22]
+            //     }], true);
+
+            // VueApexCharts.exec('mychart', "updateOptions", {
+            //     labels: [`$${this.earnings}`],
+            //     series: [percent]
+            // });
+            console.log(`series is ${this.series}`)
         },
         listedCount() {
             // const listed = this.items.filter(function (i) {
@@ -724,6 +792,7 @@ export default {
             console.log(`Number of listed items: ${listed}`)
             return listed
         },
+        // async listItems() {
         listItems() {
             for(let b=0; b < this.bboxes.length; b++) {
                 const item = this.bboxes[b]
