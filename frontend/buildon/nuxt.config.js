@@ -49,7 +49,7 @@ export default {
 
   axios: {
     // proxy: true, // Can be also an object with default options
-    baseURL: 'http://buildonapp-env.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/',
+    baseURL: 'http://localhost:80',
     headers: {
       'Content-Type': 'application/json'
     }

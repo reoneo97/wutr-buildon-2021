@@ -22,11 +22,11 @@ def load_model():
 def price_predict(product_name):
     data = load_data()
     model = load_model()
-    
+
     query_embed = model.encode(product_name, convert_to_tensor=True)
     search_names = data["name"].tolist()
     search_embed = model.encode(search_names, convert_to_tensor=True)
-    results= util.semantic_search(query_embed,search_embed,top_k=5)
+    results = util.semantic_search(query_embed, search_embed, top_k=5)
     idxs = [i["corpus_id"] for i in results[0]]
     scores = [j["score"] for j in results[0]]
     product_list = data.iloc[idxs][["name", "price"]]
@@ -40,6 +40,7 @@ def price_predict(product_name):
         weighted_sum_returned = round(weighted_sum, 2)
     return weighted_sum_returned
 
+
 def load_data():
     table = __get_table("price-info")
     response = table.scan()
@@ -52,13 +53,19 @@ def load_data():
     items["price"] = items["price"].apply(lambda x: float(x))
     return items
 
+
 def lambda_handler(event, context):
     input_text = event["product_name"]
-    try: 
+    try:
         output_price = price_predict(input_text)
         response = {
             "statusCode": 200,
-            "body": output_price
+            "body": output_price,
+            'headers': {
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Origin': "*",
+                'Access-Control-Allow-Methods': 'POST'
+            }
         }
     except Exception as e:
         response = {

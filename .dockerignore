@@ -7,3 +7,4 @@
 .gitignore
 test/
 *.pt
+./frontend/buildon/node_modules/

@@ -627,7 +627,8 @@ export default {
             // const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
             // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
-            while (this.uploadPercentage !== 100) {
+            this.done = false;
+            while (!this.done) {
 
                 // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
                 // this.waiting = true
@@ -658,6 +659,7 @@ export default {
                 }).catch(error => {
                     console.log("Failed!!!!")
                     console.log(error)
+                    this.done = false
                 })
             }
 
@@ -703,11 +705,14 @@ export default {
             for (let i=0; i < this.bboxes.length; i++) {
                 const item = this.bboxes[i]
                 // const catURL = '/production/description'
+                const ProductName =  {
+                    "text":item.name
+                }
                 const catURL = 'https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/description/'
-                const cat = await this.$axios.get(catURL + item.name)
+                const cat = await this.$axios.$post(catURL,ProductName)
                 // const priceURL = '/production/price'
                 const priceURL = "https://50j0dal2y9.execute-api.ap-southeast-1.amazonaws.com/production/price/"
-                const price = await this.$axios.get(priceURL + item.name)
+                const price = await this.$axios.$post(priceURL,ProductName)
                 item.desc = cat
                 item.price = price
                 // item.desc = `cat ${item.id}`

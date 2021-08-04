@@ -56,8 +56,9 @@ export default {
     // const URL = 'http://wutr-staging.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/api/users/feed?limit=20'
     const URL = '/api/users/feed/?limit=20'
     const listings = await this.$axios.$get(URL)
-    console.log(listings)
-    this.images = listings.listings.map(x => x.images).map(y => y.filename)
+    // console.log(listings)
+    console.log(listings.listings)
+    this.images = listings.listings.map(x => x.filename)
     }
   };
   </script>

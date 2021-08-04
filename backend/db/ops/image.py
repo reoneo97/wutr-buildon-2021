@@ -9,7 +9,7 @@ from models.listings import ListingImageBbox
 
 def get_image_bbox(key)->ListingImageBbox:
     
-    item =  __get_item(key, table_name="image_bbox")
+    item =  __get_item(key, table_name="images")
     logger.debug(f"Item Info: {item}")
     if not item:
         return None
