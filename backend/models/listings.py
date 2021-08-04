@@ -84,6 +84,7 @@ class ListingIdFeed(BaseModel):
 
 class ShortListing(BaseModel):
     id: str
+    filename: str
 
 class ListingFeedShort(BaseModel):
     listings:List[ShortListing]

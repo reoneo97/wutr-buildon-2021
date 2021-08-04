@@ -22,6 +22,7 @@ async def get_user_feed(
     """
     username = current_user.username
     listings = users_feed_db.get_user_feed(username)
+    filenames = [i["filename"] for i in listings]
     logger.debug(listings)
     if not listings:
         raise HTTPException(423,"Listing Feed for User Not Found (Check RecSys?)")
