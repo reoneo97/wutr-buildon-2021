@@ -22,13 +22,12 @@ async def get_user_feed(
     """
     username = current_user.username
     listings = users_feed_db.get_user_feed(username)
-    filenames = [i["filename"] for i in listings]
     logger.debug(listings)
     if not listings:
         raise HTTPException(423,"Listing Feed for User Not Found (Check RecSys?)")
     return {"listings":listings[:limit],"count":len(listings[:limit])}
 
-@router.get("/my_listings",response_model=ListingFeed)
+@router.get("/my_listings",response_model=ListingFeedShort)
 async def get_user_listings(
     current_user: User = Depends(get_current_user), limit:int =20):
     """
