@@ -109,11 +109,11 @@
                 </v-row>
                 </v-overlay>
                 <!-- </v-fade-transition> -->
-                    <template v-for="b in bboxes" class="d-flex align-end">
+                    <template v-for="b in bboxes" class="d-flex align-end">>
                         <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.width" :h="b.height" :y="b.top" :x="b.left" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" :style="getStyle(b)">
                             <p class="d-flex align-start pa-2"> {{ b.class }} </p>
+                        <v-card class="d-flex align-end pa-2" @click="deleteTag(b)" :key=b.id> x </v-card>
                                 <!-- <v-spacer /> -->
-                                <v-card class="d-flex align-end pa-2" @click="deleteTag(b)"> x </v-card>
                             <!-- <p>{{ b.top }} х {{ b.left }} </p>
                             <p>{{ b.width }} х {{ b.height }}</p> -->
                         </VueDragResize>
@@ -164,17 +164,18 @@
         <v-card v-if="saved">
 
             <!--.for_sale of item names -->
-            <v.for_sale>
+            <v-list>
                 <h4>Items</h4>
                 <!-- <template v-for="(item, i) in items"> -->
-                    <v.for_sale-item-group color="primary" v-model="selectedItem">
-                    <v.for_sale-item v-for="(item, i) in bboxes" :key="i" @click="setActive(item)">
+                    <v-list-item-group color="primary" v-model="selectedItem">
+                    <v-list-item v-for="(item, i) in bboxes" :key="i" @click="setActive(item)">
                         <v-divider :key=i />
-                        <v.for_sale-item-title v-text="item.name"></v.for_sale-item-title>
-                    </v.for_sale-item>
-                    </v.for_sale-item-group>
+                        <v-list-item-title v-text="item.name"></v-list-item-title>
+                    </v-list-item>
+                    </v-list-item-group>
                 <!-- </template> -->
-            </v.for_sale>
+            </v-list>
+
         </v-card>
         <v-row>
             <v-col>
@@ -201,41 +202,41 @@
                 </v-btn>
                 </div>
                 <!--.for_sale of items with categories -->
-                <v.for_sale v-if="!edit" flat>
+                <v-list v-if="!edit" flat>
                     <!-- <h4>Items</h4> -->
                     <v-card elevation="0" max-width="1090px">
-                <v.for_sale-item>
+                <v-list-item>
                 <!-- <v-col> -->
-                    <v.for_sale-item-title class="font-weight-black">Item</v.for_sale-item-title>
-                    <v.for_sale-item-title class="font-weight-black">Description</v.for_sale-item-title>
-                    <v.for_sale-item-title class="font-weight-black">Price</v.for_sale-item-title>
+                    <v-list-item-title class="font-weight-black">Item</v-list-item-title>
+                    <v-list-item-title class="font-weight-black">Description</v-list-item-title>
+                    <v-list-item-title class="font-weight-black">Price</v-list-item-title>
                     <!-- <v-divider></v-divider> -->
-                    <!-- <v.for_sale-item-title>Select</v.for_sale-item-title> -->
+                    <!-- <v-list-item-title>Select</v-list-item-title> -->
                     <!-- <h4>Item</h4>
                     <h4>Category</h4>
                     <h4>Price</h4><br>
                     <h4>Select</h4> -->
                 <!-- </v-col> -->
-                </v.for_sale-item>
+                </v-list-item>
                     </v-card>
                     <template v-for="(item, i) in bboxes" >
                     <v-divider :key=i />
                         <!-- <v-row :key="i"> -->
-                    <v.for_sale-item :key="i">
+                    <v-list-item :key="i">
                         <!-- <v-col :key="i"> -->
-                        <!-- <v.for_sale-item-content> -->
-                            <v.for_sale-item-title v-text="item.name"></v.for_sale-item-title>
-                            <v.for_sale-item-title v-text="item.description"></v.for_sale-item-title>
-                            <v.for_sale-item-title>${{ item.price }}</v.for_sale-item-title>
-                        <!-- </v.for_sale-item-content> -->
+                        <!-- <v-list-item-content> -->
+                            <v-list-item-title v-text="item.name"></v-list-item-title>
+                            <v-list-item-title v-text="item.description"></v-list-item-title>
+                            <v-list-item-title>${{ item.price }}</v-list-item-title>
+                        <!-- </v-list-item-content> -->
                         <v-switch inset v-model="item.for_sale" @change="updateListing(item)"></v-switch>
                         <!-- </v-col> -->
-                    </v.for_sale-item>
+                    </v-list-item>
                         <!-- </v-row> -->
                     </template>
-                </v.for_sale>
+                </v-list>
                 <!-- form -->
-                <v.for_sale v-else flat>
+                <v-list v-else flat>
                 <div class="btn">
                     <v-btn @click="editListing"> Cancel </v-btn>
                 </div>
@@ -263,7 +264,7 @@
                         </v-row>
                     </v-form>
                     <v-btn @click="editListing" color="primary"> Save </v-btn>
-                </v.for_sale>
+                </v-list>
             </v-card>
 
         <!-- Earnings Report -->
@@ -549,16 +550,16 @@ export default {
         //     this.x = x
         //     this.y = y
         // },
-        createTag(x, y, w, h, c, i) {
+        createTag(x, y, w, h, c, id, i) {
             const box = {
-                'id': i,
+                id,
                 'name': "Item " + i,
                 'bbox':{
                     'cls': c,
-                    'x': x,
-                    'y': y,
-                    'w': w,
-                    'h': h
+                    x,
+                    y,
+                    w,
+                    h
                 },
                 'color': this.colors[i]
             }
@@ -572,7 +573,7 @@ export default {
         },
         addTag() {
             const index = this.bboxes.length
-            this.createTag(0, 0, 100, 50, `class ${index}`, index)
+            this.createTag(0, 0, 100, 50, `class ${index}`, this.filename.split(".")[0] + String(index), index)
         },
         deleteTag(item) {
             try {
@@ -624,12 +625,13 @@ export default {
 
             // const file = 'res'
             const file = await this.$axios.$post('/api/listings/img/upload_img', data);
-            this.filename = file
+            this.filename = file.filename // newly generated id
             // const file = await this.$axios.$post('/api/listings/img/upload_img', data, config);
             // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
             this.done = false;
-            while (!this.done) {
+            // while (!this.done && this.uploadPercentage < 100) {
+            // while (!this.done) {
 
                 // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
                 // this.waiting = true
@@ -649,22 +651,25 @@ export default {
                         const name = res.filename.split(".")[0]
                         for (let i = 0; i < boxes.length; i++) {
                             const box = boxes[i]
-                            
-                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, name )
+                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, `${name + String(i)}`, i)
                         }
                     } else { // create placeholder boxes
                         this.bbox = true;
                         for (let i = 0; i < 3; i++) {
-                            this.createTag(0, 0, 100, 50, `class ${i}`, i)
+                            this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
                         }
                     }
                 // To show client-side: Resized bbox
                 }).catch(error => {
                     console.log("Failed!!!!")
                     console.log(error)
-                    this.done = false
+                    // this.done = false
+                    this.bbox = true;
+                    for (let i = 0; i < 3; i++) {
+                        this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
+                    }
                 })
-            }
+            // }
 
             // this.$Progress.finish()
 
@@ -691,6 +696,7 @@ export default {
                 b.for_sale = this.for_sale
                 return b
             })
+            this.itemName = this.bboxes[0].name
             // for (let b=0; b < this.bboxes.length; b++) {
             //     this.bboxes[b][.for_sale'] = this.for_sale
             // }
@@ -735,7 +741,7 @@ export default {
         },
         updateItem() {
             // const index = this.items.map(function(i) { return i.id; }).indexOf(this.activeBox.id); // get active index
-            const index = this.activeBox.id
+            const index = this.activeBox ? 0 : this.activeBox.id
             // this.bboxes[index].name = this.activeBox.name; // update the name
             console.log("Im here!")
             console.log(`itemName is ${this.itemName}`)
@@ -805,13 +811,31 @@ export default {
             console.log(`Number of listed items: ${listed}`)
             return listed
         },
-        // async listItems() {
-        listItems() {
+        async listItems() {
+        // listItems() {
+            const listItems = []
             for(let b=0; b < this.bboxes.length; b++) {
                 const item = this.bboxes[b]
                 const data = {
-                    'filename':item.id
+                    'name': item.name,
+                    'description': item.description,
+                    'price': item.price,
+                    'for_sale': item.for_sale,
+                    'bbox': {
+                        'cls': item.class,
+                        'x': item.x,
+                        'y': item.y,
+                        'w': item.w,
+                        'h': item.h
+                    }
                 }
+                listItems.push(data)
+            }
+            console.log(`listItems are ${listItems}`)
+            const data = {
+                'filename': this.filename,
+                'listings': listItems
+            }
                 // const data = new FormData();
                 // data.append('name', item.name);
                 // data.append('price', item.price);
@@ -824,28 +848,13 @@ export default {
                 // data.append('tags', );
                 // data.append('description', '');
 
-            }
-
-            // await this.$axios.$post("/api/listings/create", data).then(res =>
-            // {
-            //     console.log("response for listings/create: ", res);
-            // }).catch(error => {
-            //     console.log("Failed!!!!")
-            //     console.log(error)
-            // })
-
-            // const data = {
-            //     "name": "string",
-            //     "description": "string",
-            //     "price": 0,
-            //     "for_sale": true,
-            //     "images": [
-            //         {
-            //         "filename": "string"
-            //         }
-            //     ],
-            //     "tags": []
-            // }
+            await this.$axios.$post("/api/listings/create", data).then(res =>
+            {
+                console.log("response for listings/create: ", res);
+            }).catch(error => {
+                console.log("Failed!!!!")
+                console.log(error)
+            })
         }
     }
 }
