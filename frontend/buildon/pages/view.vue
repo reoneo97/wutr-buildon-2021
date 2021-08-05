@@ -117,10 +117,10 @@ export default {
     },
     // async mounted() {
     mounted() {
-        console.log("Im mounting....")
-        this.filename = this.filename ? this.filename : '14c6e92bf46311eb990b80fa5b6197fb.jpeg'
-        console.log(this.filename)
-        this.loadItem(this.filename.split(".")[0])
+        // console.log("Im mounting....")
+        // this.filename = this.filename ? this.filename : '14c6e92bf46311eb990b80fa5b6197fb.jpeg'
+        // console.log(this.filename)
+        // this.loadItem(this.filename.split(".")[0])
     //     // const URL = 'http://wutr-staging.eba-jy7d9spr.ap-southeast-1.elasticbeanstalk.com/api/users/feed?limit=20'
     //     // const URL = '/api/users/feed/?limit=20'
     //     this.item = await this.$axios.$get('/api/listings/' + this.itemName)
@@ -129,8 +129,10 @@ export default {
     methods: {
         async loadItem(itemid) {
             console.log("Im loading....")
+            console.log(`for ${itemid}`)
             await this.$axios.$get('/api/listings/create' + itemid).then(res => {
                 this.item = res
+                console.log("this item is ")
                 console.log(this.item)
                 this.loaded = true
             }).catch(error => {
