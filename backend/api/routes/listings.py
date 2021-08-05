@@ -27,7 +27,7 @@ def post_listing(
     The input will only take in the necessary attributes of the object and add
     in the other required parameters such as username, timestamp and listing id
     """
-    idx = listing.filename
+    idx = listing.filename.split(".")[0]
     listing = ListingImageInfoDb(
         id=idx, 
         user=username, created_timestamp=get_current_timestamp(),

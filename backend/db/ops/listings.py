@@ -6,8 +6,7 @@ from models.listings import *
 
 TABLE_NAME = "listings"
 def create_listing(listing: ListingImage, table_name=TABLE_NAME):
-    idx = generate_id()
-    listing_db = ListingImageInfoDb(id=idx, **listing.dict(exclude={'id',}))
+    listing_db = ListingImageInfoDb(**listing.dict())
     try:
         __create_item(listing_db.dict(), table_name)
         return listing_db
