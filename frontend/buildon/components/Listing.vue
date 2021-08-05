@@ -103,15 +103,15 @@
                 >
                 <img v-if="uploaded" :src="previewImage" class="image-fit">
                 <!-- <v-fade-transition> -->
-                <v-overlay v-if="uploaded && !done && !saved" max-width="20px" absolute>
+                <!-- <v-overlay v-if="uploaded && !done && !saved" max-width="20px" absolute>
                 <v-row class="d-flex">
                 <ProgressBar :options="options" :value="uploadPercentage"/>
                 </v-row>
-                </v-overlay>
+                </v-overlay> -->
                 <!-- </v-fade-transition> -->
-                    <template v-for="b in bboxes" class="d-flex align-end">>
-                        <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.width" :h="b.height" :y="b.top" :x="b.left" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" :style="getStyle(b)">
-                            <p class="d-flex align-start pa-2"> {{ b.class }} </p>
+                    <template v-for="b in bboxes" class="d-flex align-end">
+                        <VueDragResize @clicked="setActive(b)" :key=b.id :w="b.bbox.w" :h="b.bbox.h" :y="b.bbox.y" :x="b.bbox.x" :parentLimitation="true" @resizing="resize" @dragging="resize" :isDraggable="!saved" :isResizable="!saved" :style="getStyle(b)">
+                            <p class="d-flex align-start pa-2"> {{ b.cls }} </p>
                         <v-card class="d-flex align-end pa-2" @click="deleteTag(b)" :key=b.id> x </v-card>
                                 <!-- <v-spacer /> -->
                             <!-- <p>{{ b.top }} х {{ b.left }} </p>
@@ -299,7 +299,7 @@ import VueDragResize from 'vue-drag-resize';
 // import Chart from 'chart.js'
 import VueApexCharts from 'vue-apexcharts'
 // import VueEllipseProgress from 'vue-ellipse-progress';
-import ProgressBar from 'vuejs-progress-bar'
+// import ProgressBar from 'vuejs-progress-bar'
 // import axios from 'axios'
 // import VueProgressBar from 'vue-progress-bar';
 
@@ -375,7 +375,7 @@ export default {
     components: {
         VueDragResize,
         apexchart: VueApexCharts,
-        ProgressBar,
+        // ProgressBar,
         // prog: VueEllipseProgress,
         // VueProgressBar
         // VueDraggableResizable,
@@ -471,10 +471,10 @@ export default {
                 // }
                 const index = this.activeBox.id
                 // const box = this.bboxes[index]
-                this.bboxes[index].width = newRect.width
-                this.bboxes[index].height = newRect.height
-                this.bboxes[index].left = newRect.left
-                this.bboxes[index].top = newRect.top
+                this.bboxes[index].bbox.w = newRect.width
+                this.bboxes[index].bbox.h = newRect.height
+                this.bboxes[index].bbox.x = newRect.left
+                this.bboxes[index].bbox.y = newRect.top
                 // console.log(`Changed box: ${box}`)
                 // console.log(box)
                 // this.bboxes[index] = box
@@ -630,7 +630,8 @@ export default {
             // const file = await this.$axios.$post(postURL, data);
             console.log("response for upload_img: ", file);
             this.done = false;
-            // while (!this.done && this.uploadPercentage < 100) {
+            const startTime = Date.now()
+            while (!this.done && Math.floor((Date.now() - startTime)/1000) < 10) {
             // while (!this.done) {
 
                 // this.$axios.$get(getURL + file, {"progress": true}).then(res =>
@@ -651,25 +652,28 @@ export default {
                         const name = res.filename.split(".")[0]
                         for (let i = 0; i < boxes.length; i++) {
                             const box = boxes[i]
-                            this.createTag(box.x - box.width/2, box.y + box.height/2, box.width, box.height, box.class, `${name + String(i)}`, i)
+                            console.log(`x is ${box.x}`)
+                            console.log(`y is ${box.x}`)
+                            this.createTag((box.x - box.w/2) - 150, (box.y - box.h/2) - 150, (box.w)/3, (box.h)/3, box.cls, `${name + String(i)}`, i)
                         }
                     } else { // create placeholder boxes
-                        this.bbox = true;
-                        for (let i = 0; i < 3; i++) {
-                            this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
-                        }
+                        console.log("There are no bounding boxes!!!")
+                        // this.bbox = true;
+                        // for (let i = 0; i < 3; i++) {
+                        //     this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
+                        // }
                     }
                 // To show client-side: Resized bbox
                 }).catch(error => {
                     console.log("Failed!!!!")
                     console.log(error)
                     // this.done = false
-                    this.bbox = true;
-                    for (let i = 0; i < 3; i++) {
-                        this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
-                    }
+                    // this.bbox = true;
+                    // for (let i = 0; i < 3; i++) {
+                    //     this.createTag(0, 0, 100, 50, `class ${i}`, this.filename.split(".")[0] + String(i))
+                    // }
                 })
-            // }
+            }
 
             // this.$Progress.finish()
 
